@@ -12,3 +12,14 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+
+
+model Files {
+  id         Int      @id @default(autoincrement())
+  filename   String   @unique
+  filesize   Int
+  filetype   String
+  uploadedAt DateTime @default(now())
+}
