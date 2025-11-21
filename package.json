@@ -1,0 +1,21 @@
+{
+  "name": "file_uploader",
+  "version": "1.0.0",
+  "description": "This is a backend express web application that intends to allows users to store personal and private files and create shareable public links for specific folders or files across the internet.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
