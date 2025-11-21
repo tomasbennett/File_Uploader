@@ -13,9 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-
 model Files {
   id         Int      @id @default(autoincrement())
   filename   String   @unique
