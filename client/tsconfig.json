@@ -4,7 +4,7 @@
     "jsx": "react-jsx",
     // "allowImportingTsExtensions": true
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "../shared/**/*.ts", "../shared/**/*.tsx"],
   // "exclude": ["./src/**/*.d.ts", "./node_modules"],
   "exclude": ["./node_modules"]
 }
