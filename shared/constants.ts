@@ -14,3 +14,7 @@ export const usernamePasswordSchema = z.string()
 
 
 export type IUsernamePassword = z.infer<typeof usernamePasswordSchema>;
+
+
+
+export const rootFolderName: string = "root";

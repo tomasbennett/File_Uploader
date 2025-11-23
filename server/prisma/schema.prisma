@@ -29,8 +29,8 @@ model Folder {
   id       String      @id @default(uuid()) @db.Uuid
   name     String
 
-  parentFolderID  String?
-  parentFolder    Folder?   @relation("FolderToFolder", fields: [parentFolderID], references: [id])
+  parentFolderId  String?
+  parentFolder    Folder?   @relation("FolderToFolder", fields: [parentFolderId], references: [id])
   subFolders      Folder[]  @relation("FolderToFolder")
 
   owner   User?   @relation("UserRootFolder")
