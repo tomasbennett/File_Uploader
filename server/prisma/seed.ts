@@ -62,12 +62,6 @@ async function buildDefaultValues(): Promise<Prisma.UserCreateInput[]> {
     };
 
 
-
-
-
-
-
-
     const defaultUsers: Prisma.UserCreateInput[] = [
         defaultAdminUser,
         defaultGuestUser

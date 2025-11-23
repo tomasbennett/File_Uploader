@@ -21,7 +21,7 @@ model User {
   username  String   @unique
   password  String
 
-  rootFolderId  String  @unique
+  rootFolderId  String  @unique   @db.Uuid
   rootFolder    Folder   @relation("UserRootFolder", fields: [rootFolderId], references: [id])
 }
 
@@ -29,7 +29,7 @@ model Folder {
   id       String      @id @default(uuid()) @db.Uuid
   name     String
 
-  parentFolderId  String?
+  parentFolderId  String?   @db.Uuid
   parentFolder    Folder?   @relation("FolderToFolder", fields: [parentFolderId], references: [id])
   subFolders      Folder[]  @relation("FolderToFolder")
 
@@ -46,6 +46,6 @@ model Files {
   filetype   String
   uploadedAt DateTime @default(now())
 
-  parentFolderId  String
+  parentFolderId  String  @db.Uuid
   parentFolder          Folder   @relation(fields: [parentFolderId], references: [id])
 }
