@@ -6,14 +6,10 @@ import { maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLeng
 
 
 export function SignInLayout() {
-    // const [ title, setTitle ] = useState<"Login" | "Register" | null>(null);
-    // const [ submitUrl, setSubmitUrl ] = useState<"login" | "register" | null>(null);
-
     const matches = useMatches() as Array<{ handle?: ISignInContext }>;
 
     const title = matches.find(match => match.handle?.title)?.handle?.title || "Sign In";
     const submitUrl = title.toLowerCase();
-    const otherSigninUrl = submitUrl === "login" ? "register" : "login";
 
 
     return (
@@ -52,10 +48,23 @@ export function SignInLayout() {
 
                     <button className={styles.submitButton} type="submit">Submit</button>
 
-                    <p className={styles.switchSignInParagraph}>
-                        Don't have an account?
-                        <a href={`/sign-in/${otherSigninUrl}`}>Sign up here</a>
-                    </p>
+
+                    {
+                        submitUrl === "login" ?
+
+                        <p className={styles.switchSignInParagraph}>
+                            Don't have an account?
+                            <a href={`/sign-in/register`}>Sign up here</a>
+                        </p>
+
+                        :
+
+                        <p className={styles.switchSignInParagraph}>
+                            Already have an account?
+                            <a href={`/sign-in/login`}>Log in here</a>
+                        </p>
+                    }
+
                 </form>
             </div>
         </>
