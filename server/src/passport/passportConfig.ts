@@ -6,14 +6,29 @@ import { User } from "@prisma/client";
 
 
 
-passport.deserializeUser((id: string, done) => {
+passport.deserializeUser(async (id: string, done) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (user) {
+            done(null, user);
+
+        } else {
+            done(new Error('User not found'), null);
+            
+        }
+
+    } catch (err) {
+        return done(err, null);
+
+    }
+
 
 });
 
 
 passport.serializeUser((user: any, done) => {
     done(null, (user as User).id);
-    
+
 });
 
 

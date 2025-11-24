@@ -1,6 +1,6 @@
 import { Outlet, useMatches } from "react-router-dom";
 import styles from "./SignInLayout.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ISignInContext } from "../models/ISignInContext";
 import { maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength } from "../../../shared/constants";
 
@@ -9,7 +9,8 @@ export function SignInLayout() {
     const matches = useMatches() as Array<{ handle?: ISignInContext }>;
 
     const title = matches.find(match => match.handle?.title)?.handle?.title || "Sign In";
-    const submitUrl = title.toLowerCase();
+    const submitUrl = title.toLowerCase();  
+
 
 
     return (
