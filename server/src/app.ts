@@ -13,6 +13,7 @@ import { router as authRouter } from "./controllers/auth";
 
 
 import "./passport/passportConfig";
+import { environment } from "../../shared/constants";
 
 
 
@@ -24,8 +25,13 @@ dotenv.config({
 });
 
 const app = express();
+
+const allowedOrigins: string[] = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  origin: environment === "PROD" ? true : allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
