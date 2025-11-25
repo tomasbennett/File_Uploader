@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="auth" replace />,
+        element: <Navigate to="folder" replace />,
       },
       {
         path: "sign-in",
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: "auth",
+        // path: "auth",
         element: <ProtectedRoute />,
         children: [
           {

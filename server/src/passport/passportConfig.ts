@@ -1,9 +1,9 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { usernamePasswordSchema } from "../../../shared/constants";
+import { ISignInError, usernamePasswordSchema } from "../../../shared/constants";
 import { prisma } from "../db/prisma";
 import { User } from "@prisma/client";
-
+import bcrypt from "bcrypt";
 
 
 passport.deserializeUser(async (id: string, done) => {
@@ -13,15 +13,14 @@ passport.deserializeUser(async (id: string, done) => {
             done(null, user);
 
         } else {
-            done(new Error('User not found'), null);
+            done(null, false);
             
         }
 
     } catch (err) {
-        return done(err, null);
+        return done(err);
 
     }
-
 
 });
 
@@ -40,22 +39,43 @@ passport.use('local', new LocalStrategy({
     
     const userNameResult = usernamePasswordSchema.safeParse(username);
     if (!userNameResult.success) {
-        return done(null, false, { message: userNameResult.error.issues[0].message });
+        const signInError: ISignInError = {
+            message: userNameResult.error.issues[0].message,
+            inputType: "username"
+        }
+        return done(null, false, signInError);
     }
 
     const passwordResult = usernamePasswordSchema.safeParse(password);
     if (!passwordResult.success) {
-        return done(null, false, { message: passwordResult.error.issues[0].message });
+        const signInError: ISignInError = {
+            message: passwordResult.error.issues[0].message,
+            inputType: "password"
+        }
+        return done(null, false, signInError);
+
     }
 
     try {
         const user = await prisma.user.findUnique({ where: { username }  });
         if (!user) {
-            return done(null, false, { message: 'Username not found in our databse!!!' });
+            const signInError: ISignInError = {
+                message: 'Username not found in our databse!!!',
+                inputType: "username"
+            }
+            return done(null, false, signInError);
+        
         }
 
-        if (user.password !== password) {
-            return done(null, false, { message: 'Incorrect password!!!' });
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            const signInError: ISignInError = {
+                message: 'Incorrect password!!!',
+                inputType: "password"
+            }
+            return done(null, false, signInError);
+        
         }
 
         return done(null, user);
