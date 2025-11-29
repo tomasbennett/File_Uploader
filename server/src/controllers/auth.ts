@@ -7,7 +7,7 @@ router.get("/check", (req, res) => {
         res.status(200).json({ message: "Authenticated" });
 
     } else {
-        res.status(400).json({ message: "Not authenticated" });
+        res.status(401).json({ message: "Not authenticated" });
 
     }
 });

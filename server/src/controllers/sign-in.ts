@@ -7,12 +7,13 @@ import { prisma } from "../db/prisma";
 
 import bcrypt from "bcrypt";
 import "dotenv/config";
+import { ensureNotAuthenticated } from "../passport/ensureAuthentication";
 
 
 export const router = Router();
 
 
-router.post("/login", (req: Request, res: Response<ISignInError | { message: string, user: User }>, next: NextFunction) => {
+router.post("/login", ensureNotAuthenticated, (req: Request, res: Response<ISignInError | { message: string, user: User }>, next: NextFunction) => {
     passport.authenticate("local", (err: Error, user: User | false, info: ISignInError | undefined) => {
         if (err) {
             return next(err);
@@ -36,7 +37,7 @@ router.post("/login", (req: Request, res: Response<ISignInError | { message: str
 });
 
 
-router.post("/register", async (req: Request<{}, {}, { username: string, password: string }>, res: Response<ISignInError | { message: string, user: User }>, next: NextFunction) => {
+router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { username: string, password: string }>, res: Response<ISignInError | { message: string, user: User }>, next: NextFunction) => {
     const { username, password } = req.body;
 
     const usernameResult = usernamePasswordSchema.safeParse(username);
@@ -72,7 +73,14 @@ router.post("/register", async (req: Request<{}, {}, { username: string, passwor
             }
         });
 
-        return res.status(201).json({ message: "User registered successfully", user: newUser });
+        req.logIn(newUser, (err) => {
+            if (err) {
+                return next(err);
+            }
+
+            return res.status(201).json({ message: "User registered successfully", user: newUser });
+        });
+
 
     } catch (error: unknown) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {

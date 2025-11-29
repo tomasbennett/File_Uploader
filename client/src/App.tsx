@@ -6,7 +6,7 @@ import { GeneralHomeLayout } from './layouts/GeneralHomeLayout'
 import { SignInLayout } from './layouts/SignInLayout'
 import { LogIn } from './components/LoginComponent'
 import { Register } from './components/Register'
-import { ProtectedRoute } from './services/ProtectedRoute'
+import { NotAuthenticatedRoute, ProtectedRoute } from './services/ProtectedRoute'
 
 
 const router = createBrowserRouter([
@@ -19,26 +19,31 @@ const router = createBrowserRouter([
         element: <Navigate to="folder" replace />,
       },
       {
-        path: "sign-in",
-        element: <SignInLayout />,
+        element: <NotAuthenticatedRoute />,
         children: [
           {
-            index: true,
-            element: <Navigate to="login" replace />,
-          },
-          {
-            path: "login",
-            element: <LogIn />,
-            handle: {
-              title: "Login",
-            }
-          },
-          {
-            path: "register",
-            element: <Register />,
-            handle: {
-              title: "Register",
-            }
+            path: "sign-in",
+            element: <SignInLayout />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="login" replace />,
+              },
+              {
+                path: "login",
+                element: <LogIn />,
+                handle: {
+                  title: "Login",
+                }
+              },
+              {
+                path: "register",
+                element: <Register />,
+                handle: {
+                  title: "Register",
+                }
+              }
+            ]
           }
         ]
       },
@@ -46,10 +51,10 @@ const router = createBrowserRouter([
         // path: "auth",
         element: <ProtectedRoute />,
         children: [
-          {
-            index: true,
-            element: <Navigate to="folder" replace />,
-          },
+          // {
+          //   index: true,
+          //   element: <Navigate to="folder" replace />,
+          // },
           {
             path: "folder",
             element: <div>Folder Page</div>,

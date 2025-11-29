@@ -1,4 +1,4 @@
-import { Outlet, useMatches } from "react-router-dom";
+import { Link, Outlet, useMatches } from "react-router-dom";
 import styles from "./SignInLayout.module.css";
 import { ISignInContext } from "../models/ISignInContext";
 import { ILoginForm, IUsernamePassword, SignInErrorSchema, loginFormSchema, maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength, usernamePasswordSchema } from "../../../shared/constants";
@@ -11,7 +11,7 @@ export function SignInLayout() {
     const matches = useMatches() as Array<{ handle?: ISignInContext }>;
 
     const title = matches.find(match => match.handle?.title)?.handle?.title || "Sign In";
-    const submitUrl = title.toLowerCase();  
+    const submitUrl = title.toLowerCase();
 
 
     const {
@@ -138,15 +138,14 @@ export function SignInLayout() {
 
                         <p className={styles.switchSignInParagraph}>
                             Don't have an account?
-                            <a href={`/sign-in/register`}>Sign up here</a>
+                            <Link to="/sign-in/register">Sign up here</Link>
                         </p>
-
-                    :
-
+                        :
                         <p className={styles.switchSignInParagraph}>
                             Already have an account?
-                            <a href={`/sign-in/login`}>Log in here</a>
+                            <Link to="/sign-in/login">Log in here</Link>
                         </p>
+
                 }
             </div>
         </>

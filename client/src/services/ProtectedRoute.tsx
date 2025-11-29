@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { LoadingCircle } from "../components/LoadingCircle";
+import { domain } from "./EnvironmentAPI";
 
 export function ProtectedRoute() {
     const [auth, setAuth] = useState<boolean | null>(null);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("SignInLayout mounted");
-    
+    useEffect(() => {   
         async function checkAuth() {
             try {
                 console.log("Checking auth...");
-                const response = await fetch('http://localhost:3000/auth/check', {
+                const response = await fetch(`${domain}/auth/check`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: { Accept: 'application/json' }
@@ -20,11 +20,13 @@ export function ProtectedRoute() {
     
                 if (response.ok) {
                     setAuth(true);
+
                 } else {
                     const data = await response.json();
                     console.log(data?.message);
                     console.log("not authenticated");
                     setAuth(false);
+
                 }
             } catch (error) {
                 console.log("Fetch error:", error);
@@ -35,6 +37,12 @@ export function ProtectedRoute() {
         checkAuth();
     }, []);
     
+    useEffect(() => {
+        if (auth === false) {
+            navigate('/sign-in/login');
+
+        }
+    }, [auth]);
 
 
     if (auth === null) {
@@ -45,7 +53,6 @@ export function ProtectedRoute() {
         )
 
     } else if (auth === false) {
-        window.location.href = '/sign-in/login';
         return null;
 
     } else {
@@ -53,4 +60,108 @@ export function ProtectedRoute() {
 
     }
 
+}
+
+
+// export function NotAuthenticatedRoute() {
+//     const [auth, setAuth] = useState<boolean | null>(null);
+//     const navigate = useNavigate();
+
+//     useEffect(() => {    
+//         async function checkAuth() {
+//             try {
+//                 console.log("Checking auth...");
+//                 const response = await fetch(`${domain}/auth/check`, {
+//                     method: 'GET',
+//                     credentials: 'include',
+//                     headers: { Accept: 'application/json' }
+//                 });
+//                 console.log("Fetch response received");
+    
+//                 if (response.ok) {
+//                     setAuth(true);
+//                 } else if (response.status === 401) {
+//                     const data = await response.json();
+//                     console.log(data?.message);
+//                     console.log("not authenticated");
+//                     setAuth(false);
+//                     navigate('/');
+
+//                 } else {
+//                     setAuth(false);
+//                 }
+//             } catch (error) {
+//                 console.log("Fetch error:", error);
+//                 setAuth(false);
+
+//             }
+//         }
+    
+//         checkAuth();
+//     }, []);
+
+//     if (auth === null) {
+//         return (
+//             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', flex: '1 1 0' }}>
+//                 <LoadingCircle width="5rem" />
+//             </div>
+//         )
+
+//     } else if (auth === true) {
+//         return null;
+
+//     } else {
+//         return <Outlet />;
+
+//     }
+// }
+
+export function NotAuthenticatedRoute() {
+    const [auth, setAuth] = useState<boolean | null>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${domain}/auth/check`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { Accept: 'application/json' }
+                });
+
+                if (response.ok) {
+                    setAuth(true);
+                } else if (response.status === 401) {
+                    setAuth(false);
+                } else {
+                    setAuth(false);
+                }
+            } catch {
+                setAuth(false);
+            }
+        }
+
+        checkAuth();
+    }, []);
+
+    useEffect(() => {
+        if (auth === true) {
+            navigate('/');
+        }
+    }, [auth]);
+
+
+    if (auth === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', flex: '1 1 0' }}>
+                <LoadingCircle width="5rem" />
+            </div>
+        )
+    }
+
+    if (auth === false) {
+        return <Outlet />;
+    }
+
+    return null;
 }
