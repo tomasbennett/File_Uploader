@@ -1,0 +1,178 @@
+.dialogElement{
+    --padding-left: 1rem;
+    --padding-right: 1.2rem;
+    --padding-top: 2rem;
+
+    --transition-speed-important: .2s;
+
+    --dialog-width: min(30rem, 100%);
+
+    height: 100%;
+    min-height: 100%;
+    width: var(--dialog-width);
+    max-width: unset;
+    min-width: none;
+
+    background-color: rgb(15, 15, 15);
+
+
+    border-left-width: .1rem;
+    border-color: white;
+    border-style: solid;
+
+
+    padding-top: var(--padding-top);
+
+    inset: auto;
+    margin: 0;
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    z-index: 99;
+}
+
+
+
+
+
+
+
+.dialogElement[data-animation-opening="true"]{
+    animation: openDialog var(--transition-speed-important) linear forwards;
+}
+
+.dialogElement[data-animation-opening="false"]{
+    animation: closeDialog var(--transition-speed-important) linear forwards;
+}
+
+.dialogElement[data-animation-opening="true"]::backdrop{
+    animation: openBackdrop var(--transition-speed-important) linear forwards;
+}
+
+.dialogElement[data-animation-opening="false"]::backdrop{
+    animation: closeBackdrop var(--transition-speed-important) linear forwards;
+}
+
+
+@keyframes openDialog {
+    from{
+        left: 100%;
+    }
+    to{
+        left: calc(100% - var(--dialog-width));
+    }
+}
+
+@keyframes closeDialog {
+    from{
+        left: calc(100% - var(--dialog-width));
+    }
+    to{
+        left: 100%;
+    }
+}
+
+@keyframes openBackdrop {
+    from{
+        background-color: rgba(0, 0, 0, 0);
+    }
+    to{
+        background-color: rgba(0, 0, 0, .4);
+    }
+}
+
+@keyframes closeBackdrop {
+    from{
+        background-color: rgba(0, 0, 0, .4);
+    }
+    to{
+        background-color: rgba(0, 0, 0, 0);
+    }
+}
+
+
+
+
+
+.dialogContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    row-gap: 3rem;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+}
+
+
+
+
+.headerContainer{
+    padding-left: var(--padding-left);
+    padding-right: var(--padding-right);
+
+    flex-shrink: 0;
+
+    height: 6rem;
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 1rem;
+
+
+    overflow: hidden;
+}
+
+.headerContainer > h2{
+    font-size: 2.4rem;
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+.backBtnContainer{
+    flex-grow: 0;
+    flex-shrink: 0;
+
+    height: 4rem;
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transition: background-color .2s linear;
+}
+
+.backBtnContainer:hover{
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.backBtnContainer > svg{
+    fill: white;
+
+    height: 60%;
+
+    overflow: hidden;
+
+    object-fit: cover;
+}

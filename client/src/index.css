@@ -37,6 +37,7 @@ html,
 body {
   /* font-family: "Orbitron", "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; */
   /* font-size-adjust: 0.5; */
+  position: relative;
 
   font-size: 1.6rem;
 

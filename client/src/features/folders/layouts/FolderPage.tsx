@@ -6,6 +6,8 @@ import { AddFoldersFilesButtons } from "../components/AddFoldersFilesButtons";
 import { FolderSidebarDisplay } from "../components/FolderSidebarDisplay";
 import { ParentFolderRouteDisplay } from "../components/ParentFolderRouteDisplay";
 import { CWDFoldersFilesDisplay } from "../components/CWDFoldersFilesDisplay";
+import { DialogDisplayLayout } from "./DialogDisplay";
+import { useDialogToggle } from "../hooks/useDialogToggle";
 
 export function FolderPage() {
 
@@ -41,6 +43,13 @@ export function FolderPage() {
     }, [folderId]);
 
 
+
+
+    const dialogFolderToggle = useDialogToggle();
+    const dialogFileToggle = useDialogToggle();
+    const dialogRemoveFolderToggle = useDialogToggle();
+    const dialogShareFolderToggle = useDialogToggle();
+
     return (
         <div className={styles.folderPageContainer}>
 
@@ -61,7 +70,12 @@ export function FolderPage() {
                 <aside>
                     {/* <div className={styles.optionsContainer}> */}
 
-                        <AddFoldersFilesButtons />
+                        <AddFoldersFilesButtons
+                            openFolderDialog={dialogFolderToggle.openDialog}
+                            openFileDialog={dialogFileToggle.openDialog}
+                            openRemoveFolderDialog={dialogRemoveFolderToggle.openDialog}
+                            openShareFolderDialog={dialogShareFolderToggle.openDialog}
+                            />
 
                     {/* </div> */}
 
@@ -81,8 +95,15 @@ export function FolderPage() {
 
                     <CWDFoldersFilesDisplay />
 
-                    
-
+                    <DialogDisplayLayout 
+                        title="Add New Folder"
+                        handleClickOutside={dialogFolderToggle.handleClickOutside} 
+                        closeDialog={dialogFolderToggle.closeDialog} 
+                        dialogRef={dialogFolderToggle.dialogRef}
+                        >
+                        {/* <FileDialogDisplay /> */}
+                        <div>Dialog Content Here</div>
+                    </DialogDisplayLayout>
 
                 </main>
 
