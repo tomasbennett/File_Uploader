@@ -81,6 +81,8 @@ export function FolderPage() {
 
                     <CWDFoldersFilesDisplay />
 
+                    
+
 
                 </main>
 

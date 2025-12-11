@@ -109,7 +109,7 @@
 
     background-color: var(--dark-container-colour);
 
-    border-radius: .4rem;
+    border-radius: .2rem;
     border: .1rem solid var(--soft-light-colour);
 
     cursor: pointer;
@@ -171,4 +171,16 @@
     height: 85%;
     object-fit: contain;
 
+}
+
+
+.placeholderText{
+    padding: 0 var(--section-inline-padding);
+
+    margin: 0 auto;
+
+    margin-top: 4rem;
+
+    font-style: italic;
+    font-weight: 700;
 }
