@@ -32,7 +32,8 @@
     color: var(--soft-light-colour);
 
 
-    border: .1rem solid var(--soft-light-colour);
+    /* border: .1rem solid var(--soft-light-colour); */
+    border: .1rem solid transparent;
     border-radius: .4rem;
 
     cursor: pointer;

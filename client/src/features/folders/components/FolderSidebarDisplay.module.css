@@ -10,7 +10,7 @@
 
     padding: 1rem var(--inline-padding-sidebar);
 
-    background-color: rgb(20, 20, 20);
+    background-color: var(--dark-container-colour);
     
     border-radius: .1rem;
     border: .1rem solid var(--soft-light-colour);

@@ -1,0 +1,57 @@
+.parentFolderRouteContainer{
+    --inline-padding-parent-router: 1.5rem;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    font-size: 2rem;
+    font-weight: 700;
+
+
+    width: 100%;
+    height: 6rem;
+
+    background-color: var(--dark-container-colour);
+
+    border-radius: .4rem;
+    border: .1rem solid var(--soft-light-colour);
+
+    overflow-x: auto;
+
+    padding-left: var(--inline-padding-parent-router);
+}
+
+
+.folderRouteItem{
+
+}
+
+.separator{
+    font-size: 1.4rem;
+}
+
+.folderRouteItem:not(.currentFolderRouteItem){
+    cursor: pointer;
+    color: var(--soft-light-colour);
+
+    transition: color .2s ease-in-out;
+
+}
+
+.folderRouteItem:not(.currentFolderRouteItem):hover{
+    text-decoration: underline;
+    color: white;
+}
+
+
+
+
+.currentFolderRouteItem{
+    color: white;
+
+    margin-right: var(--inline-padding-parent-router);
+    /* font-style: italic; */
+}

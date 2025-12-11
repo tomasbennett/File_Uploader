@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { LogoutIcon } from "../../../assets/icons/LogoutIcon";
 import { AddFoldersFilesButtons } from "../components/AddFoldersFilesButtons";
 import { FolderSidebarDisplay } from "../components/FolderSidebarDisplay";
+import { ParentFolderRouteDisplay } from "../components/ParentFolderRouteDisplay";
+import { CWDFoldersFilesDisplay } from "../components/CWDFoldersFilesDisplay";
 
 export function FolderPage() {
 
@@ -73,6 +75,12 @@ export function FolderPage() {
 
 
                 <main>
+
+
+                    <ParentFolderRouteDisplay />
+
+                    <CWDFoldersFilesDisplay />
+
 
                 </main>
 
