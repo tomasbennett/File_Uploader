@@ -7,6 +7,7 @@ import { SignInLayout } from './layouts/SignInLayout'
 import { LogIn } from './components/LoginComponent'
 import { Register } from './components/Register'
 import { NotAuthenticatedRoute, ProtectedRoute } from './services/ProtectedRoute'
+import { FolderPage } from './features/folders/layouts/FolderPage'
 
 
 const router = createBrowserRouter([
@@ -51,20 +52,20 @@ const router = createBrowserRouter([
         // path: "auth",
         element: <ProtectedRoute />,
         children: [
-          // {
-          //   index: true,
-          //   element: <Navigate to="folder" replace />,
-          // },
           {
             path: "folder",
-            element: <div>Folder Page</div>,
             children: [
               {
                 index: true,
-                element: <div>Folder Index Page</div>,
+                element: <Navigate to="root" replace />
               },
+              {
+                path: ":folderId",
+                element: <FolderPage />,
+              }
             ]
           }
+
         ]
       }
     ]

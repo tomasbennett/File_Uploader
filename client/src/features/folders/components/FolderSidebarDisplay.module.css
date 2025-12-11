@@ -1,0 +1,123 @@
+.sidebarContainer {
+    flex: 1 1 0;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+
+    padding: 1rem var(--inline-padding-sidebar);
+
+    background-color: rgb(20, 20, 20);
+    
+    border-radius: .1rem;
+    border: .1rem solid var(--soft-light-colour);
+
+    overflow-y: auto;
+
+}
+
+
+.sidebarContainer>h2 {
+    padding-left: .5rem;
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+
+
+.folderList {
+    list-style-type: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    padding-left: 1.5rem;
+
+
+
+}
+
+.folderList > li{
+    flex-shrink: 0;
+
+    width: 100%;
+
+}
+
+.folderItem {
+
+
+    font-size: 1.4rem;
+
+    height: 4rem;
+    width: 100%;
+
+    /* padding: 1rem 0;
+    padding-left: .5rem; */
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+
+    color: var(--soft-light-colour);
+    fill: var(--soft-light-colour);
+
+    text-decoration: none;
+
+
+    border: .1rem solid transparent;
+    border-radius: .4rem;
+
+    transition: background-color .2s linear,
+                color .2s linear,
+                fill .2s linear,
+                border .2s linear
+                ;
+
+    cursor: pointer;
+
+    overflow: hidden;
+}
+
+.folderItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    color: white;
+
+    fill: white;
+
+    border: .1rem solid white;
+    border-left-width: .6rem;
+}
+
+
+
+
+.folderItem>svg {
+    margin-left: .4rem;
+
+    flex-shrink: 0;
+
+    fill: inherit;
+
+    height: 80%;
+
+    object-fit: contain;
+
+    overflow: hidden;
+}
+
+.folderItem>p {
+    flex: 1 1 0;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    overflow: hidden;
+}

@@ -129,3 +129,13 @@
 .switchSignInParagraph a:hover {
     color: var(--hover-button-colour);
 }
+
+
+
+
+
+.errorMessage{
+    color: red;
+
+    margin-bottom: .5rem;
+}

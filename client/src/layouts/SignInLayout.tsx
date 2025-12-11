@@ -1,10 +1,11 @@
-import { Link, Outlet, useMatches } from "react-router-dom";
+import { Link, Outlet, useLocation, useMatches } from "react-router-dom";
 import styles from "./SignInLayout.module.css";
 import { ISignInContext } from "../models/ISignInContext";
 import { ILoginForm, IUsernamePassword, SignInErrorSchema, loginFormSchema, maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength, usernamePasswordSchema } from "../../../shared/constants";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { domain } from "../services/EnvironmentAPI";
+import { useEffect } from "react";
 
 
 export function SignInLayout() {
@@ -18,7 +19,8 @@ export function SignInLayout() {
         register,
         handleSubmit,
         formState: { errors },
-        setError
+        setError,
+        clearErrors
     } = useForm<ILoginForm>({
         resolver: zodResolver(loginFormSchema),
         mode: "onSubmit",
@@ -51,18 +53,6 @@ export function SignInLayout() {
                     setError("root", { type: "server", message: "An unknown error occurred." }); //PLEASE DON'T FORGET FOR LATER PROJECTS THAT root CAN HAVE ADDITIONAL PROPERTIES ATTACHED TO IT FOR CUSTOM ERRORS IF YOU HAVE A SERVER ERROR UNRELATED TO THE USER INPUTS LIKE root.serverError
 
                 }
-                // if (responseData && responseData.errors) {
-                //     for (const field in responseData.errors) {
-                //         setError(field as keyof ILoginForm, { type: "server", message: responseData.errors[field] });
-
-                //     }
-
-                // } else if (responseData && responseData.message) {
-                //     setError("username", { type: "server", message: responseData.message });
-
-                // } else {
-
-                // }
 
             }
 
@@ -73,6 +63,12 @@ export function SignInLayout() {
     }
 
 
+    const location = useLocation();
+    
+    useEffect(() => {
+        clearErrors();
+
+    }, [location.pathname]);
 
 
 
