@@ -8,6 +8,9 @@ import { ParentFolderRouteDisplay } from "../components/ParentFolderRouteDisplay
 import { CWDFoldersFilesDisplay } from "../components/CWDFoldersFilesDisplay";
 import { DialogDisplayLayout } from "./DialogDisplay";
 import { useDialogToggle } from "../hooks/useDialogToggle";
+import { FolderDialogDisplay } from "../components/FolderDialogDisplay";
+import { NewFileDisplay } from "../components/NewFileDisplay";
+import { ShareFolderDialogDisplay } from "../components/ShareFolderDialogDisplay";
 
 export function FolderPage() {
 
@@ -47,7 +50,6 @@ export function FolderPage() {
 
     const dialogFolderToggle = useDialogToggle();
     const dialogFileToggle = useDialogToggle();
-    const dialogRemoveFolderToggle = useDialogToggle();
     const dialogShareFolderToggle = useDialogToggle();
 
     return (
@@ -58,7 +60,7 @@ export function FolderPage() {
                 <h1>Folders & Files</h1>
 
                 <div className={styles.logOutContainer}>
-                    
+
                     <LogoutIcon />
 
                 </div>
@@ -68,22 +70,60 @@ export function FolderPage() {
             <div className={styles.mainContainer}>
 
                 <aside>
-                    {/* <div className={styles.optionsContainer}> */}
 
-                        <AddFoldersFilesButtons
-                            openFolderDialog={dialogFolderToggle.openDialog}
-                            openFileDialog={dialogFileToggle.openDialog}
-                            openRemoveFolderDialog={dialogRemoveFolderToggle.openDialog}
-                            openShareFolderDialog={dialogShareFolderToggle.openDialog}
-                            />
+                    <DialogDisplayLayout
+                        title="Add New Folder"
+                        handleClickOutside={dialogFolderToggle.handleClickOutside}
+                        closeDialog={dialogFolderToggle.closeDialog}
+                        dialogRef={dialogFolderToggle.dialogRef}
+                    >
+                        <FolderDialogDisplay
+                            submitBtnText="Create Folder"
+                            submitUrl="/folders/create-folder"
+                            placeholder="Please enter your new folder name here..."
+                        />
 
-                    {/* </div> */}
+                    </DialogDisplayLayout>
 
-                    {/* <div className={styles.foldersContainer}> */}
 
-                        <FolderSidebarDisplay />
+                    <DialogDisplayLayout
+                        title="Add New File"
+                        handleClickOutside={dialogFileToggle.handleClickOutside}
+                        closeDialog={dialogFileToggle.closeDialog}
+                        dialogRef={dialogFileToggle.dialogRef}
+                    >
+                        <NewFileDisplay />
 
-                    {/* </div> */}
+                    </DialogDisplayLayout>
+
+
+                    <DialogDisplayLayout
+                        title="Share this folder"
+                        handleClickOutside={dialogShareFolderToggle.handleClickOutside}
+                        closeDialog={dialogShareFolderToggle.closeDialog}
+                        dialogRef={dialogShareFolderToggle.dialogRef}
+                    >
+                        
+                        <ShareFolderDialogDisplay />
+
+                    </DialogDisplayLayout>
+
+
+
+
+
+
+
+
+
+
+
+                    <AddFoldersFilesButtons
+                        openFolderDialog={dialogFolderToggle.openDialog}
+                        openFileDialog={dialogFileToggle.openDialog}
+                        openShareFolderDialog={dialogShareFolderToggle.openDialog}
+                    />
+                    <FolderSidebarDisplay />
 
                 </aside>
 
@@ -94,16 +134,6 @@ export function FolderPage() {
                     <ParentFolderRouteDisplay />
 
                     <CWDFoldersFilesDisplay />
-
-                    <DialogDisplayLayout 
-                        title="Add New Folder"
-                        handleClickOutside={dialogFolderToggle.handleClickOutside} 
-                        closeDialog={dialogFolderToggle.closeDialog} 
-                        dialogRef={dialogFolderToggle.dialogRef}
-                        >
-                        {/* <FileDialogDisplay /> */}
-                        <div>Dialog Content Here</div>
-                    </DialogDisplayLayout>
 
                 </main>
 

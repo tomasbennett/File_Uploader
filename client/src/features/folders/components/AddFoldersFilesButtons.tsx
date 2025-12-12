@@ -8,14 +8,12 @@ import styles from "./AddFoldersFilesButtons.module.css";
 type IAddFoldersFilesButtonsProps = {
     openFolderDialog: () => void;
     openFileDialog: () => void;
-    openRemoveFolderDialog: () => void;
     openShareFolderDialog: () => void;
 };
 
 export function AddFoldersFilesButtons({
     openFolderDialog,
     openFileDialog,
-    openRemoveFolderDialog,
     openShareFolderDialog
 }: IAddFoldersFilesButtonsProps) {
 
@@ -51,7 +49,7 @@ export function AddFoldersFilesButtons({
             <button 
                 onClick={(e) => {
                     e.preventDefault();
-                    openRemoveFolderDialog();
+                    // Implement remove folder functionality here
                 }} 
                 type="button" className={styles.optionBtn}>
                 <DeleteTrashCan />

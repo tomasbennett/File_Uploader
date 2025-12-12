@@ -14,6 +14,9 @@
   --soft-light-colour: #e0e0e0;
   --dark-container-colour: rgb(20, 20, 20);
   --dark-consistent-bg-header-colour: rgb(29, 29, 29);
+
+  --blue-button-colour: rgb(0, 89, 255);
+  --hover-button-colour: rgb(0, 65, 185);
 }
 
 *,
@@ -55,7 +58,7 @@ body {
 }
 
 
-div#root{
+div#root {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,6 +70,6 @@ div#root{
 }
 
 
-svg{
+svg {
   fill: inherit;
 }
