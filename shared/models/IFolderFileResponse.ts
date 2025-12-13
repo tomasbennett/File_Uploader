@@ -7,15 +7,29 @@ const FolderResponseSchema = z.object({
     parentId: z.string().nullable()
 });
 
+export type IFolderResponse = z.infer<typeof FolderResponseSchema>;
+
+
 
 const FileResponseSchema = z.object({
     id: z.string(),
     name: z.string(),
-    parentFolderId: z.string().nullable(),
-    createdAt: z.string(),
+    parentFolderId: z.string(),
+    createdAt: z.date(),
     size: z.number(),
     fileType: z.string()
 });
+
+
+
+export type IFileResponse = z.infer<typeof FileResponseSchema>;
+
+
+
+
+
+
+
 
 
 export const FolderFileResponseSchema = z.object({

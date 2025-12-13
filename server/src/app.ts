@@ -1,3 +1,5 @@
+
+
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import path from "path";
@@ -9,7 +11,7 @@ import passport from "passport";
 
 import { router as signInRouter } from "./controllers/sign-in";
 import { router as authRouter } from "./controllers/auth";
-
+import { router as apiRouter } from "./controllers/api";
 
 
 import "./passport/passportConfig";
@@ -82,7 +84,7 @@ app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
 
 app.use("/sign-in", signInRouter);
 app.use("/auth", authRouter);
-
+app.use("/api", apiRouter);
 
 
 

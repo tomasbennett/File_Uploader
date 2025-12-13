@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { ISignInError } from "../../../shared/constants";
+import { ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
 
-export function ensureAuthentication(req: Request, res: Response, next: NextFunction) {
+export function ensureAuthentication(req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) {
     if (req.isAuthenticated && req.isAuthenticated()) {
         return next();
 
     } else {
-        res.redirect("/sign-in/login");
+        return res.status(401).json({
+            ok: false,
+            status: 401,
+            message: "Authentication required, unauthorized user"
+        });
 
     }
 }

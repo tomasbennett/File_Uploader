@@ -3,5 +3,5 @@
   "compilerOptions": {
   },
   "include": ["./src/**/*.ts", "../shared/**/*.ts"],
-  "exclude": ["./src/**/*.d.ts", "./node_modules"]
+  "exclude": ["./node_modules"] // "./src/**/*.d.ts", 
 }
