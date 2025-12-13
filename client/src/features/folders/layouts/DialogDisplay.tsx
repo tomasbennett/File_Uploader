@@ -5,8 +5,9 @@ type IDialogDisplayLayoutProps = {
     children: React.ReactNode,
     dialogRef: React.RefObject<HTMLDialogElement | null>,
 
-    closeDialog: () => void,
-    handleClickOutside: (event: React.MouseEvent<HTMLDialogElement, MouseEvent>) => void
+    closeDialog: (postCloseAction?: () => void) => void,
+    handleClickOutside: (event: React.MouseEvent<HTMLDialogElement, MouseEvent>, postCloseAction?: () => void) => void
+    postCloseAction?: () => void,
 
     title: string
 };
@@ -17,13 +18,15 @@ export function DialogDisplayLayout({
     closeDialog,
     handleClickOutside,
 
+    postCloseAction,
+
     title
 }: IDialogDisplayLayoutProps) {
     return (
         <dialog
             className={styles.dialogElement}
             ref={dialogRef}
-            onClick={(event) => handleClickOutside(event)}
+            onClick={(event) => handleClickOutside(event, postCloseAction)}
             >
 
             <div className={styles.dialogContainer}>
@@ -33,7 +36,7 @@ export function DialogDisplayLayout({
                     <h2 className={styles.dialogTitle}>{title}</h2>
                     <div
                         className={styles.backBtnContainer}
-                        onClick={() => { closeDialog(); }}
+                        onClick={() => { closeDialog(postCloseAction); }}
                         >
 
                         <BackBtnIcon />

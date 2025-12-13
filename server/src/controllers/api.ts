@@ -69,4 +69,5 @@ router.get(
             next(error);
 
         }
-    });
+    }
+);

@@ -11,6 +11,8 @@ import { useDialogToggle } from "../hooks/useDialogToggle";
 import { FolderDialogDisplay } from "../components/FolderDialogDisplay";
 import { NewFileDisplay } from "../components/NewFileDisplay";
 import { ShareFolderDialogDisplay } from "../components/ShareFolderDialogDisplay";
+import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { FileInfoDialogDisplay } from "../components/FileInfoDialogDisplay";
 
 export function FolderPage() {
 
@@ -51,6 +53,12 @@ export function FolderPage() {
     const dialogFolderToggle = useDialogToggle();
     const dialogFileToggle = useDialogToggle();
     const dialogShareFolderToggle = useDialogToggle();
+    
+    const dialogFileInfoToggle = useDialogToggle();
+
+
+    const [fileInfoData, setFileInfoData] = useState<IFileResponse | null>(null);
+
 
     return (
         <div className={styles.folderPageContainer}>
@@ -133,7 +141,20 @@ export function FolderPage() {
 
                     <ParentFolderRouteDisplay />
 
-                    <CWDFoldersFilesDisplay />
+                    <CWDFoldersFilesDisplay 
+                        openFileInfoDialog={dialogFileInfoToggle.openDialog} 
+                        setFileInfoData={setFileInfoData} />
+
+                    <DialogDisplayLayout
+                        title="File Information"
+                        handleClickOutside={dialogFileInfoToggle.handleClickOutside}
+                        closeDialog={dialogFileInfoToggle.closeDialog}
+                        dialogRef={dialogFileInfoToggle.dialogRef}
+                        postCloseAction={() => setFileInfoData(null)}
+                    >
+                        <FileInfoDialogDisplay file={fileInfoData} />
+
+                    </DialogDisplayLayout>
 
                 </main>
 

@@ -1,9 +1,24 @@
+import React from "react";
 import { FileIcon } from "../../../assets/icons/FileIcon";
 import { FolderIcon } from "../../../assets/icons/FolderIcon";
 import styles from "./CWDFoldersFilesDisplay.module.css";
+import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse";
+
+type ICWDFoldersFilesDisplayProps = {
+    setFileInfoData: React.Dispatch<React.SetStateAction<IFileResponse | null>>;
+    openFileInfoDialog: () => void;
+
+};
 
 
-export function CWDFoldersFilesDisplay() {
+
+
+export function CWDFoldersFilesDisplay({
+    setFileInfoData,
+    openFileInfoDialog
+}: ICWDFoldersFilesDisplayProps) {
+
+
     return (
         <div className={styles.cwdFoldersFilesContainer}>
 
@@ -39,7 +54,20 @@ export function CWDFoldersFilesDisplay() {
                     <span className={styles.itemDate}>December 13, 2025</span>
                 </div>
 
-                <div className={styles.itemRow}>
+                <div
+                    className={styles.itemRow}
+                    onClick={() => {
+                        setFileInfoData({
+                            id: "file-123",
+                            name: "AHJDBJDF",
+                            size: 2,
+                            fileType: "JPEG Image",
+                            createdAt: new Date("2012-12-01"),
+                            parentFolderId: "folder-456"
+                        });
+                        openFileInfoDialog();
+                    }}
+                >
                     <span className={styles.itemName}>AHJDBJDF</span>
                     <span className={styles.itemType}>
                         <FileIcon />
