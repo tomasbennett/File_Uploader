@@ -150,9 +150,9 @@
     height: 4rem;
     aspect-ratio: 1;
 
-    border-radius: 50%;
+    border-radius: .4rem;
 
-    
+    border: .1rem solid transparent;
 
     display: flex;
     align-items: center;
@@ -162,11 +162,14 @@
 
     cursor: pointer;
 
-    transition: background-color .2s linear;
+    transition: background-color .2s linear,
+                border .2s linear;
 }
 
 .backBtnContainer:hover{
     background-color: rgba(255, 255, 255, 0.2);
+
+    border-color: white;
 }
 
 .backBtnContainer > svg{

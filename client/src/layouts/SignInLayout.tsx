@@ -1,11 +1,11 @@
 import { Link, Outlet, useLocation, useMatches } from "react-router-dom";
 import styles from "./SignInLayout.module.css";
 import { ISignInContext } from "../models/ISignInContext";
-import { ILoginForm, IUsernamePassword, SignInErrorSchema, loginFormSchema, maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength, usernamePasswordSchema } from "../../../shared/constants";
+import { ILoginForm, ISignInError, IUsernamePassword, SignInErrorSchema, loginFormSchema, maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength, usernamePasswordSchema } from "../../../shared/constants";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { domain } from "../services/EnvironmentAPI";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 
 export function SignInLayout() {
@@ -13,6 +13,9 @@ export function SignInLayout() {
 
     const title = matches.find(match => match.handle?.title)?.handle?.title || "Sign In";
     const submitUrl = title.toLowerCase();
+
+
+
 
 
     const {
@@ -64,11 +67,46 @@ export function SignInLayout() {
 
 
     const location = useLocation();
-    
+    const stateERRORS = location.state?.errors as ISignInError | undefined;
+
+
+    const errorResult = SignInErrorSchema.safeParse(stateERRORS);
+    const appliedRef = useRef<boolean>(false);
+
+    if (errorResult.success && !appliedRef.current) {
+        appliedRef.current = true;
+        setError(errorResult.data.inputType, { type: "server", message: errorResult.data.message });
+
+    }
+
+
+
+
+
     useEffect(() => {
         clearErrors();
 
+        if (stateERRORS) {
+            window.history.replaceState({}, document.title);
+
+        }
+
     }, [location.pathname]);
+
+
+    // const stateERRORS = location.state?.errors as ISignInError | undefined;
+    // useEffect(() => {
+    //     if (stateERRORS) {
+    //         const errorResult = SignInErrorSchema.safeParse(stateERRORS);
+
+    //         if (errorResult.success) {
+    //             setError(errorResult.data.inputType, { type: "server", message: errorResult.data.message });
+
+    //         }
+    //     }
+
+    // }, [errors, setError]);
+
 
 
 
