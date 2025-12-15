@@ -11,42 +11,39 @@ import { useDialogToggle } from "../hooks/useDialogToggle";
 import { FolderDialogDisplay } from "../components/FolderDialogDisplay";
 import { NewFileDisplay } from "../components/NewFileDisplay";
 import { ShareFolderDialogDisplay } from "../components/ShareFolderDialogDisplay";
-import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { IFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
 import { FileInfoDialogDisplay } from "../components/FileInfoDialogDisplay";
+import { ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
+import { useFetchFoldersPage } from "../hooks/useFetchFoldersPage";
 
 export function FolderPage() {
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isError, setIsError] = useState<Error | null>(null);
-
-
     const { folderId } = useParams<{ folderId: string }>();
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
+
+    const [folderData, setFolderData] = useState<IFolderResponse[] | null>(null);
+    const [fileData, setFileData] = useState<IFileResponse[] | null>(null);
+    const [parentFolders, setParentFolders] = useState<IFolderResponse[] | null>(null);
+
+
+    const {
+        getFullPageData
+    } = useFetchFoldersPage(
+        {
+            setIsLoading,
+            setIsError
+        }
+    );
 
 
     useEffect(() => {
 
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                setIsError(null);
-
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                console.log(`Fetching data for folderId: ${folderId}`);
-
-            } catch (error) {
-                setIsError(error as Error);
-
-            } finally {
-                setIsLoading(false);
-
-            }
-        };
-
-        fetchData();
+        // getFullPageData(folderId);
 
 
     }, [folderId]);
-
 
 
 
