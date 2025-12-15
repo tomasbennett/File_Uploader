@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { LoadingCircle } from "../components/LoadingCircle";
 import { domain } from "./EnvironmentAPI";
 
@@ -37,12 +37,12 @@ export function ProtectedRoute() {
         checkAuth();
     }, []);
     
-    useEffect(() => {
-        if (auth === false) {
-            navigate('/sign-in/login');
+    // useEffect(() => {
+    //     if (auth === false) {
+    //         navigate('/sign-in/login');
 
-        }
-    }, [auth]);
+    //     }
+    // }, [auth]);
 
 
     if (auth === null) {
@@ -53,7 +53,7 @@ export function ProtectedRoute() {
         )
 
     } else if (auth === false) {
-        return null;
+        return <Navigate to="/sign-in/login" replace />;
 
     } else {
         return <Outlet />;
@@ -144,11 +144,11 @@ export function NotAuthenticatedRoute() {
         checkAuth();
     }, []);
 
-    useEffect(() => {
-        if (auth === true) {
-            navigate('/');
-        }
-    }, [auth]);
+    // useEffect(() => {
+    //     if (auth === true) {
+    //         navigate('/');
+    //     }
+    // }, [auth]);
 
 
     if (auth === null) {
@@ -163,5 +163,5 @@ export function NotAuthenticatedRoute() {
         return <Outlet />;
     }
 
-    return null;
+    return <Navigate to="/" replace />;
 }
