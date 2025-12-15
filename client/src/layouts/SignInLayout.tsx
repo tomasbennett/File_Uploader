@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useMatches } from "react-router-dom";
+import { Link, Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 import styles from "./SignInLayout.module.css";
 import { ISignInContext } from "../models/ISignInContext";
 import { ILoginForm, ISignInError, IUsernamePassword, SignInErrorSchema, loginFormSchema, maxUsernamePasswordLength as maxUsernameLength, minUsernamePasswordLength, usernamePasswordSchema } from "../../../shared/constants";
@@ -15,7 +15,7 @@ export function SignInLayout() {
     const submitUrl = title.toLowerCase();
 
 
-
+    const navigate = useNavigate();
 
 
     const {
@@ -43,7 +43,9 @@ export function SignInLayout() {
             });
 
             if (response.ok) {
-                window.location.href = "/";
+                // window.location.href = "/";
+                navigate("/", { replace: true });
+                return;
 
             } else {
                 const responseData = await response.json();
@@ -106,11 +108,6 @@ export function SignInLayout() {
     //     }
 
     // }, [errors, setError]);
-
-
-
-
-
 
     return (
         <>
