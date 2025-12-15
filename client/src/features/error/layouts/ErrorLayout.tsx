@@ -2,12 +2,20 @@ import styles from "./ErrorLayout.module.css";
 
 import { Navigate, useLocation} from "react-router-dom";
 import { APIErrorSchema } from "../../../../../shared/models/ICustomErrorResponse";
+import { useEffect } from "react";
 
 export function ErrorPageLayout() {
     const location = useLocation();
     const errorState = location.state?.error;
 
     console.log(errorState);
+
+    useEffect(() => {
+        if (errorState) {
+            window.history.replaceState({}, document.title);
+        }
+    }, [location, errorState]);
+    
 
     if (!errorState) {
         return <Navigate to="/" replace />;

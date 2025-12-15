@@ -4,6 +4,8 @@ import { ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorR
 export function ErrorElement() {
     const error = useRouteError();
 
+    
+
     if (isRouteErrorResponse(error)) {
         const state: ICustomErrorResponse = {
             ok: false,
