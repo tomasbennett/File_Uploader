@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { GeneralHomeLayout } from './layouts/GeneralHomeLayout'
 import { SignInLayout } from './layouts/SignInLayout'
@@ -8,16 +6,23 @@ import { LogIn } from './components/LoginComponent'
 import { Register } from './components/Register'
 import { NotAuthenticatedRoute, ProtectedRoute } from './services/ProtectedRoute'
 import { FolderPage } from './features/folders/layouts/FolderPage'
+import { ErrorElement } from './features/error/services/ErrorElement'
+import { ErrorPageLayout } from './features/error/layouts/ErrorLayout'
 
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <GeneralHomeLayout />,
+    errorElement: <ErrorElement />,
     children: [
       {
         index: true,
         element: <Navigate to="folder" replace />,
+      },
+      {
+        path: "error",
+        element: <ErrorPageLayout />,
       },
       {
         element: <NotAuthenticatedRoute />,
