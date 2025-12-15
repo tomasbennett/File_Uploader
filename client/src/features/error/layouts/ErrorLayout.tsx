@@ -30,7 +30,7 @@ export function ErrorPageLayout() {
     if (errorState instanceof Error) {
         return (
             <div className={styles.errorContainer}>
-                <h1>Error</h1>
+                <h1 className={styles.errorTitle}>Error</h1>
                 <p className={styles.errorMessage}>Error {errorState.name}</p>
                 <p className={styles.errorMessage}>{errorState.message}</p>
             </div>
