@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./FolderPage.module.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { LogoutIcon } from "../../../assets/icons/LogoutIcon";
 import { AddFoldersFilesButtons } from "../components/AddFoldersFilesButtons";
 import { FolderSidebarDisplay } from "../components/FolderSidebarDisplay";
@@ -13,10 +13,12 @@ import { NewFileDisplay } from "../components/NewFileDisplay";
 import { ShareFolderDialogDisplay } from "../components/ShareFolderDialogDisplay";
 import { IFileResponse, IFolderFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
 import { FileInfoDialogDisplay } from "../components/FileInfoDialogDisplay";
-import { ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
+import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { useFetchFoldersPage } from "../hooks/useFetchFoldersPage";
 import { LoadingCircle } from "../../../components/LoadingCircle";
 import { domain } from "../../../services/EnvironmentAPI";
+import { errorHandler } from "../services/ErrorHandler";
+import { jsonParsingError } from "../constants";
 
 export function FolderPage() {
 
@@ -28,6 +30,9 @@ export function FolderPage() {
     const [folderData, setFolderData] = useState<IFolderResponse[] | null>(null);
     const [fileData, setFileData] = useState<IFileResponse[] | null>(null);
     const [parentFolders, setParentFolders] = useState<IFolderResponse[] | null>(null);
+
+
+    const abortController = useRef<AbortController | null>(null);
 
 
     const {
@@ -43,7 +48,14 @@ export function FolderPage() {
     useEffect(() => {
 
         async function fetchData() {
-            const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(folderId);
+            abortController.current?.abort();
+
+            abortController.current = new AbortController();
+
+            const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(
+                folderId,
+                abortController.current
+            );
 
             if (folderFilesResponse === null) {
                 return;
@@ -99,26 +111,72 @@ export function FolderPage() {
 
     }, [parentFolders])
 
-
+    const navigate = useNavigate();
 
     const onLogOut = useCallback(async () => {
         const url: string = `${domain}/sign-in/logout`;
 
+        setIsLoading(true);
+
         try {
-            const logoutConfirmationData = await fetch(url, {
-                method: 'POST',
+            abortController.current?.abort();
 
-            });
+            const response: Response | null = await errorHandler(
+                url,
+                "POST",
+                navigate,
+                setIsError,
+                new AbortController()
+            )
 
+            if (response === null) {
+                return;
+
+            }
+
+            if (response.status === 200) {
+                navigate("/sign-in/login", { replace: true });
+                return;
+
+            }
+
+            try {
+                const jsonData = await response.json();
+
+                const errorResult = APIErrorSchema.safeParse(jsonData);
+                if (errorResult.success) {
+                    setIsError(errorResult.data);
+                    return;
+
+                }
+
+                const notExpectedFormatError: ICustomErrorResponse = {
+                    ok: false,
+                    status: 0,
+                    message: "The returned data from logout was not in the correct format!!!"
+                }
+                setIsError(notExpectedFormatError);
+                return;
+
+            } catch {
+                setIsError(jsonParsingError);
+                return null;
+
+            }
 
 
             
-        } catch (error) {
-            
+        } finally {
+            setIsLoading(false);
 
         }
+
+
     }, []);
 
+    useEffect(() => {
+        console.log(isError);
+    }, [isError])
 
 
     return (

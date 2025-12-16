@@ -9,6 +9,7 @@ import bcrypt from "bcrypt";
 import "dotenv/config";
 import { ensureAuthentication, ensureNotAuthenticated } from "../passport/ensureAuthentication";
 import { ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
+import { ICustomSuccessMessage } from "../../../shared/models/ISuccessResponse";
 
 
 export const router = Router();
@@ -102,7 +103,7 @@ router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { u
 
 
 
-router.post("/logout", ensureAuthentication, (req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) => {
+router.post("/logout", ensureAuthentication, (req: Request, res: Response<ICustomSuccessMessage>, next: NextFunction) => {
 
     req.logOut(err => {
         if (err) return next(err);
@@ -113,7 +114,7 @@ router.post("/logout", ensureAuthentication, (req: Request, res: Response<ICusto
 
             res.clearCookie("session-id");
             return res.status(200).json({
-                ok: false,
+                ok: true,
                 status: 200,
                 message: "Successfully logged out!!!"
             });
