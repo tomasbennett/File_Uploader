@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
-import { IFolderResponse, IFileResponse, FolderFileResponseSchema } from "../../../../../shared/models/IFolderFileResponse";
+import { IFolderResponse, IFileResponse, FolderFileResponseSchema, IFolderFileResponse } from "../../../../../shared/models/IFolderFileResponse";
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
+import { ISignInError } from "../../../../../shared/constants";
 
 
 type IUseFetchFoldersPageProps = {
@@ -20,11 +21,18 @@ export function useFetchFoldersPage({
 
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
+    const jsonParsingError: ICustomErrorResponse = {
+        ok: false,
+        status: 0,
+        message: "There was an error parsing the json data!!!"
+    }
 
-    const getFullPageData = async (folderId: string | undefined) => {
+
+    const getFullPageData: (folderId: string | undefined) => Promise<IFolderFileResponse | null> = async (folderId: string | undefined) => {
         if (!folderId) {
-            console.error("No folderId provided to fetch data.");
-            return;
+            console.error("No folderId provided to fetch data!!!");
+            return null;
+
         }
 
 
@@ -62,6 +70,8 @@ export function useFetchFoldersPage({
 
                 } catch (err) {
                     console.error("Error parsing server error response:", err);
+                    setIsError(jsonParsingError);
+                    return null;
 
                 }
             
@@ -75,20 +85,55 @@ export function useFetchFoldersPage({
                 return null;
             }
 
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401) {
                 
-                
+                const signInError: ISignInError = {
+                    message: "You were logged out!!!",
+                    inputType: "root"
+                }
                 navigate('/sign-in/login', { 
-                    replace: true
+                    replace: true,
+                    state: {
+                        error: signInError
+                    }
                 });
+
                 return null;
+
             }
 
 
+            try {
+                const jsonData = await response.json();
 
+                const result = FolderFileResponseSchema.safeParse(jsonData);
+                if (result.success) {
+                    return result.data;
 
-            const jsonData = await response.json();
-            const result = FolderFileResponseSchema.safeParse(jsonData);
+                }
+
+                const errorResult = APIErrorSchema.safeParse(jsonData);
+                if (errorResult.success) {
+                    console.log("success error!!!");
+                    setIsError(errorResult.data);
+                    return null;
+
+                }
+
+                const notExpectedFormatError: ICustomErrorResponse = {
+                    ok: false,
+                    status: 0,
+                    message: "The returned data was not in the correct format!!!"
+                }
+                setIsError(notExpectedFormatError);
+                return null;
+
+            } catch {
+                setIsError(jsonParsingError);
+                return null;
+
+            }
+
 
 
 

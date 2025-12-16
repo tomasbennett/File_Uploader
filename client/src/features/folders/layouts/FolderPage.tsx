@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "./FolderPage.module.css";
 import { useParams } from "react-router-dom";
 import { LogoutIcon } from "../../../assets/icons/LogoutIcon";
@@ -11,10 +11,11 @@ import { useDialogToggle } from "../hooks/useDialogToggle";
 import { FolderDialogDisplay } from "../components/FolderDialogDisplay";
 import { NewFileDisplay } from "../components/NewFileDisplay";
 import { ShareFolderDialogDisplay } from "../components/ShareFolderDialogDisplay";
-import { IFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { IFileResponse, IFolderFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
 import { FileInfoDialogDisplay } from "../components/FileInfoDialogDisplay";
 import { ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { useFetchFoldersPage } from "../hooks/useFetchFoldersPage";
+import { LoadingCircle } from "../../../components/LoadingCircle";
 
 export function FolderPage() {
 
@@ -40,7 +41,23 @@ export function FolderPage() {
 
     useEffect(() => {
 
-        // getFullPageData(folderId);
+        async function fetchData() {
+            const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(folderId);
+
+            if (folderFilesResponse === null) {
+                return;
+
+            }
+
+            setFolderData(folderFilesResponse.cwdFolders);
+            setFileData(folderFilesResponse.cwdFiles);
+            setParentFolders(folderFilesResponse.parentFolders);
+
+            return;
+
+        }
+
+        fetchData();
 
 
     }, [folderId]);
@@ -50,11 +67,42 @@ export function FolderPage() {
     const dialogFolderToggle = useDialogToggle();
     const dialogFileToggle = useDialogToggle();
     const dialogShareFolderToggle = useDialogToggle();
-    
+
     const dialogFileInfoToggle = useDialogToggle();
-
-
     const [fileInfoData, setFileInfoData] = useState<IFileResponse | null>(null);
+
+
+
+
+
+    const isRoot = useMemo<boolean>(() => {
+        if (!parentFolders) {
+            return false;
+        }
+
+        if (parentFolders.length > 1) {
+            return false;
+        }
+
+        return true;
+
+    }, [parentFolders]);
+
+
+    const parentFolderId = useMemo<string | undefined>(() => {
+        if (parentFolders === null) {
+            return undefined;
+        }
+
+        return parentFolders[1]?.id;
+
+    }, [parentFolders])
+
+
+    useEffect(() => {
+        console.error(isError);
+    }, [isError])
+
 
 
     return (
@@ -72,92 +120,109 @@ export function FolderPage() {
 
             </header>
 
-            <div className={styles.mainContainer}>
-
-                <aside>
-
-                    <DialogDisplayLayout
-                        title="Add New Folder"
-                        handleClickOutside={dialogFolderToggle.handleClickOutside}
-                        closeDialog={dialogFolderToggle.closeDialog}
-                        dialogRef={dialogFolderToggle.dialogRef}
-                    >
-                        <FolderDialogDisplay
-                            submitBtnText="Create Folder"
-                            submitUrl="/folders/create-folder"
-                            placeholder="Please enter your new folder name here..."
-                        />
-
-                    </DialogDisplayLayout>
 
 
-                    <DialogDisplayLayout
-                        title="Add New File"
-                        handleClickOutside={dialogFileToggle.handleClickOutside}
-                        closeDialog={dialogFileToggle.closeDialog}
-                        dialogRef={dialogFileToggle.dialogRef}
-                    >
-                        <NewFileDisplay />
+            {
+                isLoading ?
+                    <div className={styles.loadingContainer}>
 
-                    </DialogDisplayLayout>
+                        <LoadingCircle width="6rem" />
 
+                    </div>
 
-                    <DialogDisplayLayout
-                        title="Share this folder"
-                        handleClickOutside={dialogShareFolderToggle.handleClickOutside}
-                        closeDialog={dialogShareFolderToggle.closeDialog}
-                        dialogRef={dialogShareFolderToggle.dialogRef}
-                    >
-                        
-                        <ShareFolderDialogDisplay />
+                    :
 
-                    </DialogDisplayLayout>
+                    <div className={styles.mainContainer}>
 
+                        <aside>
 
+                            <DialogDisplayLayout
+                                title="Add New Folder"
+                                handleClickOutside={dialogFolderToggle.handleClickOutside}
+                                closeDialog={dialogFolderToggle.closeDialog}
+                                dialogRef={dialogFolderToggle.dialogRef}
+                            >
+                                <FolderDialogDisplay
+                                    submitBtnText="Create Folder"
+                                    submitUrl="/folders/create-folder"
+                                    placeholder="Please enter your new folder name here..."
+                                />
 
-
-
-
-
-
+                            </DialogDisplayLayout>
 
 
+                            <DialogDisplayLayout
+                                title="Add New File"
+                                handleClickOutside={dialogFileToggle.handleClickOutside}
+                                closeDialog={dialogFileToggle.closeDialog}
+                                dialogRef={dialogFileToggle.dialogRef}
+                            >
+                                <NewFileDisplay />
 
-                    <AddFoldersFilesButtons
-                        openFolderDialog={dialogFolderToggle.openDialog}
-                        openFileDialog={dialogFileToggle.openDialog}
-                        openShareFolderDialog={dialogShareFolderToggle.openDialog}
-                    />
-                    <FolderSidebarDisplay />
-
-                </aside>
-
-
-                <main>
+                            </DialogDisplayLayout>
 
 
-                    <ParentFolderRouteDisplay />
+                            <DialogDisplayLayout
+                                title="Share this folder"
+                                handleClickOutside={dialogShareFolderToggle.handleClickOutside}
+                                closeDialog={dialogShareFolderToggle.closeDialog}
+                                dialogRef={dialogShareFolderToggle.dialogRef}
+                            >
 
-                    <CWDFoldersFilesDisplay 
-                        openFileInfoDialog={dialogFileInfoToggle.openDialog} 
-                        setFileInfoData={setFileInfoData} />
+                                <ShareFolderDialogDisplay />
 
-                    <DialogDisplayLayout
-                        title="File Information"
-                        handleClickOutside={dialogFileInfoToggle.handleClickOutside}
-                        closeDialog={dialogFileInfoToggle.closeDialog}
-                        dialogRef={dialogFileInfoToggle.dialogRef}
-                        postCloseAction={() => setFileInfoData(null)}
-                    >
-                        <FileInfoDialogDisplay file={fileInfoData} />
-
-                    </DialogDisplayLayout>
-
-                </main>
+                            </DialogDisplayLayout>
 
 
-            </div>
 
+
+
+
+
+
+
+
+
+                            <AddFoldersFilesButtons
+                                openFolderDialog={dialogFolderToggle.openDialog}
+                                openFileDialog={dialogFileToggle.openDialog}
+                                openShareFolderDialog={dialogShareFolderToggle.openDialog}
+                            />
+
+
+                            <FolderSidebarDisplay
+                                parentFolderId={parentFolderId}
+                                isRoot={isRoot}
+                                folders={folderData} />
+
+                        </aside>
+
+
+                        <main>
+
+
+                            <ParentFolderRouteDisplay />
+
+                            <CWDFoldersFilesDisplay
+                                openFileInfoDialog={dialogFileInfoToggle.openDialog}
+                                setFileInfoData={setFileInfoData} />
+
+                            <DialogDisplayLayout
+                                title="File Information"
+                                handleClickOutside={dialogFileInfoToggle.handleClickOutside}
+                                closeDialog={dialogFileInfoToggle.closeDialog}
+                                dialogRef={dialogFileInfoToggle.dialogRef}
+                                postCloseAction={() => setFileInfoData(null)}
+                            >
+                                <FileInfoDialogDisplay file={fileInfoData} />
+
+                            </DialogDisplayLayout>
+
+                        </main>
+
+
+                    </div>
+            }
 
         </div>
     );

@@ -69,7 +69,7 @@ export function SignInLayout() {
 
 
     const location = useLocation();
-    const stateERRORS = location.state?.errors as ISignInError | undefined;
+    const stateERRORS = location.state?.error as ISignInError | undefined;
 
 
     const errorResult = SignInErrorSchema.safeParse(stateERRORS);

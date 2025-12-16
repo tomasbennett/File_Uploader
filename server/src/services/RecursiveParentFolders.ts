@@ -1,35 +1,46 @@
-import { Folder } from "@prisma/client";
+import { Folder, Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { IFolderResponse } from "../../../shared/models/IFolderFileResponse";
 
+type IFolderWithOwner = Prisma.FolderGetPayload<{
+    include: {
+
+        owner: true
+    }
+}>
+
+
 export async function getRecursiveParentFolders(
-    folderId: string
-): Promise<IFolderResponse[]> {
-    
+    folderId: string | null
+): Promise<IFolderWithOwner[]> {
+
     try {
-        const parentFolders: IFolderResponse[] = [];
+        const parentFolders: IFolderWithOwner[] = [];
         let currentFolderId: string | null = folderId;
-    
+
         while (currentFolderId !== null) {
-            const currentFolder: Folder | null = await prisma.folder.findUnique({
+            const currentFolder: IFolderWithOwner | null = await prisma.folder.findUnique({
                 where: { id: currentFolderId },
-                select: { id: true, name: true, parentFolderId: true }
+                include: {
+                    owner: true
+                }
+                // select: { id: true, name: true, parentFolderId: true },
             });
-    
-            if (!currentFolder) {
-                break;
-            }
-    
+        
+            if (!currentFolder) break;
+        
             parentFolders.push({
                 id: currentFolder.id,
                 name: currentFolder.name,
-                parentId: currentFolder.parentFolderId
+                parentFolderId: currentFolder.parentFolderId,
+                owner: currentFolder.owner
+
             });
-    
+        
             currentFolderId = currentFolder.parentFolderId;
-    
         }
-    
+        
+
         return parentFolders;
 
     } catch (error) {
