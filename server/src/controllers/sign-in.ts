@@ -7,7 +7,8 @@ import { prisma } from "../db/prisma";
 
 import bcrypt from "bcrypt";
 import "dotenv/config";
-import { ensureNotAuthenticated } from "../passport/ensureAuthentication";
+import { ensureAuthentication, ensureNotAuthenticated } from "../passport/ensureAuthentication";
+import { ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
 
 
 export const router = Router();
@@ -19,8 +20,8 @@ router.post("/login", ensureNotAuthenticated, (req: Request, res: Response<ISign
             return next(err);
         }
         if (!user) {
-            return res.status(401).json({ 
-                message: info ? info.message : "Authentication failed", 
+            return res.status(401).json({
+                message: info ? info.message : "Authentication failed",
                 inputType: info ? info.inputType : "root"
             });
 
@@ -42,21 +43,21 @@ router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { u
 
     const usernameResult = usernamePasswordSchema.safeParse(username);
     if (!usernameResult.success) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             message: usernameResult.error.issues[0].message,
-            inputType: "username" 
+            inputType: "username"
         });
 
     }
 
     const passwordResult = usernamePasswordSchema.safeParse(password);
     if (!passwordResult.success) {
-        return res.status(400).json({ 
-            message: passwordResult.error.issues[0].message, 
+        return res.status(400).json({
+            message: passwordResult.error.issues[0].message,
             inputType: "password"
         });
     }
-    
+
 
     try {
         const hashedPassword: string = await bcrypt.hash(password, process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS) : 10);
@@ -85,11 +86,11 @@ router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { u
     } catch (error: unknown) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === "P2002") {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     message: "Username already exists",
-                    inputType: "username" 
+                    inputType: "username"
                 });
-            
+
             }
 
         }
@@ -98,6 +99,43 @@ router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { u
 
     }
 });
+
+
+
+router.post("/logout", ensureAuthentication, (req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) => {
+
+    req.logOut(err => {
+        if (err) return next(err);
+
+        req.session.destroy((err) => {
+            if (err) return next(err);
+
+
+            res.clearCookie("session-id");
+            return res.status(200).json({
+                ok: false,
+                status: 200,
+                message: "Successfully logged out!!!"
+            });
+
+        });
+
+
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {

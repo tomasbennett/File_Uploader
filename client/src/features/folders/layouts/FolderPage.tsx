@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./FolderPage.module.css";
 import { useParams } from "react-router-dom";
 import { LogoutIcon } from "../../../assets/icons/LogoutIcon";
@@ -16,6 +16,7 @@ import { FileInfoDialogDisplay } from "../components/FileInfoDialogDisplay";
 import { ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { useFetchFoldersPage } from "../hooks/useFetchFoldersPage";
 import { LoadingCircle } from "../../../components/LoadingCircle";
+import { domain } from "../../../services/EnvironmentAPI";
 
 export function FolderPage() {
 
@@ -99,9 +100,24 @@ export function FolderPage() {
     }, [parentFolders])
 
 
-    useEffect(() => {
-        console.error(isError);
-    }, [isError])
+
+    const onLogOut = useCallback(async () => {
+        const url: string = `${domain}/sign-in/logout`;
+
+        try {
+            const logoutConfirmationData = await fetch(url, {
+                method: 'POST',
+
+            });
+
+
+
+            
+        } catch (error) {
+            
+
+        }
+    }, []);
 
 
 
@@ -112,7 +128,10 @@ export function FolderPage() {
 
                 <h1>Folders & Files</h1>
 
-                <div className={styles.logOutContainer}>
+                <div 
+                    className={styles.logOutContainer}
+                    onClick={onLogOut}
+                    >
 
                     <LogoutIcon />
 
