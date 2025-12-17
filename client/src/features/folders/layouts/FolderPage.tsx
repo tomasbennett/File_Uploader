@@ -24,6 +24,7 @@ export function FolderPage() {
 
     const { folderId } = useParams<{ folderId: string }>();
 
+
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
 
@@ -174,9 +175,9 @@ export function FolderPage() {
 
     }, []);
 
-    useEffect(() => {
-        console.log(isError);
-    }, [isError])
+    // useEffect(() => {
+    //     console.log(isError);
+    // }, [isError])
 
 
     return (
@@ -278,7 +279,9 @@ export function FolderPage() {
                         <main>
 
 
-                            <ParentFolderRouteDisplay />
+                            <ParentFolderRouteDisplay
+                                parentFolders={parentFolders}
+                            />
 
                             <CWDFoldersFilesDisplay
                                 openFileInfoDialog={dialogFileInfoToggle.openDialog}
