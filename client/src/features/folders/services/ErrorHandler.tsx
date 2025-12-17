@@ -59,7 +59,7 @@ export async function errorHandler(
         }
 
         if (response.status === 401) {
-
+            console.log("DATA SENT CORRECTLY FROM ERROR HANDLER!!!")
             const signInError: ISignInError = {
                 message: "You were logged out!!!",
                 inputType: "root"

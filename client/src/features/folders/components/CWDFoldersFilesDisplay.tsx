@@ -54,7 +54,7 @@ export function CWDFoldersFilesDisplay({
                             {
                                 cwdFolders.map((folder) => {
                                     return (
-                                        <Link to={`/folder/${folder.id}`} className={styles.itemRow}>
+                                        <Link key={folder.id} to={`/folder/${folder.id}`} className={styles.itemRow}>
                                             <span className={styles.itemName}>{folder.name}</span>
                                             <span className={styles.itemType}>
                                                 <FolderIcon />
