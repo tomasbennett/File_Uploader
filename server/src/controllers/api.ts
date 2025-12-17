@@ -61,7 +61,8 @@ router.get(
                 id: folder.id,
                 name: folder.name,
                 parentFolderId: folder.parentFolderId,
-                owner: folder.owner
+                owner: folder.owner,
+                createdAt: folder.createdAt
             });
 
             const parentFoldersLength: number = parentFolders.length;
@@ -144,12 +145,14 @@ router.get(
                     id: subFolder.id,
                     name: subFolder.name,
                     parentId: subFolder.parentFolderId,
+                    createdAt: subFolder.createdAt
                 })),
                 parentFolders: parentFolders.map((parentFolder) => {
                     return {
                         id: parentFolder.id,
                         name: parentFolder.name,
-                        parentId: parentFolder.parentFolderId
+                        parentId: parentFolder.parentFolderId,
+                        createdAt: parentFolder.createdAt
                     }
                 }),
             }

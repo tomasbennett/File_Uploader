@@ -4,6 +4,7 @@ import { FolderIcon } from "../../../assets/icons/FolderIcon";
 import styles from "./CWDFoldersFilesDisplay.module.css";
 import { IFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
 import { Link } from "react-router-dom";
+import { formatDateUS } from "../services/DateFormatter";
 
 type ICWDFoldersFilesDisplayProps = {
     setFileInfoData: React.Dispatch<React.SetStateAction<IFileResponse | null>>;
@@ -58,7 +59,7 @@ export function CWDFoldersFilesDisplay({
                                             <span className={styles.itemType}>
                                                 <FolderIcon />
                                             </span>
-                                            <span className={styles.itemDate}>December 11, 2025</span>
+                                            <span className={styles.itemDate}>{formatDateUS(folder.createdAt)}</span>
                                         </Link>
                                     )
                                 })
@@ -82,11 +83,11 @@ export function CWDFoldersFilesDisplay({
                                                 openFileInfoDialog();
                                             }}
                                         >
-                                            <span className={styles.itemName}>AHJDBJDF</span>
+                                            <span className={styles.itemName}>{file.name}</span>
                                             <span className={styles.itemType}>
                                                 <FileIcon />
                                             </span>
-                                            <span className={styles.itemDate}>December 1, 2012</span>
+                                            <span className={styles.itemDate}>{formatDateUS(file.createdAt)}</span>
                                         </div>
                                     )
                                 })

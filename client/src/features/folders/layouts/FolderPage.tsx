@@ -53,15 +53,20 @@ export function FolderPage() {
 
             abortController.current = new AbortController();
 
+            console.log("process started!!!");
+
             const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(
                 folderId,
                 abortController.current
             );
 
             if (folderFilesResponse === null) {
+                console.log("returned null!!!");
                 return;
 
             }
+
+            console.dir(folderFilesResponse);
 
             setFolderData(folderFilesResponse.cwdFolders);
             setFileData(folderFilesResponse.cwdFiles);

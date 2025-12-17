@@ -57,14 +57,14 @@ export function useFetchFoldersPage({
             //         status: response.status,
             //         message: response?.statusText || "Internal Server Error"
             //     };
-            
+
             //     try {
             //         const data = await response.json();
 
             //         const result = APIErrorSchema.safeParse(data);
             //         if (result.success) {
             //             serverError.message = result.data.message;
-                        
+
             //         }
 
             //     } catch (err) {
@@ -73,19 +73,19 @@ export function useFetchFoldersPage({
             //         return null;
 
             //     }
-            
+
             //     navigate('/error', {
             //         replace: true,
             //         state: {
             //             error: serverError
             //         }
             //     });
-            
+
             //     return null;
             // }
 
             // if (response.status === 401) {
-                
+
             //     const signInError: ISignInError = {
             //         message: "You were logged out!!!",
             //         inputType: "root"
@@ -118,11 +118,15 @@ export function useFetchFoldersPage({
             try {
                 const jsonData = await response.json();
 
-                const result = FolderFileResponseSchema.safeParse(jsonData);
-                if (result.success) {
-                    return result.data;
+                // if ("createdAt" in jsonData) {
+                //     const date: Date | false = typeof jsonData.createdAt === "string" && new Date(jsonData.createdAt)
+                //     jsonData.createdAt = date ? date : new Date()
 
-                }
+                // }
+                
+                const result = FolderFileResponseSchema.safeParse(jsonData);
+                if (result.success) return result.data;
+
 
                 const errorResult = APIErrorSchema.safeParse(jsonData);
                 if (errorResult.success) {

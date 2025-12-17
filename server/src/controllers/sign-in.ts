@@ -70,6 +70,7 @@ router.post("/register", ensureNotAuthenticated, async (req: Request<{}, {}, { u
                 rootFolder: {
                     create: {
                         name: "root",
+                        createdAt: new Date()
                     }
                 }
             }

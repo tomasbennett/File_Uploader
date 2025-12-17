@@ -19,13 +19,16 @@ async function buildDefaultValues(): Promise<Prisma.UserCreateInput[]> {
         rootFolder: {
             create: {
                 name: "root",
+                createdAt: new Date(),
                 subFolders: {
                     create: [
                         {
                             name: "admin folder 1",
+                            createdAt: new Date(1995, 11, 17)
                         },
                         {
                             name: "admin folder 2",
+                            createdAt: new Date(1995, 1, 13)
                         }
                     ]
                 }
@@ -40,17 +43,21 @@ async function buildDefaultValues(): Promise<Prisma.UserCreateInput[]> {
         rootFolder: {
             create: {
                 name: "root",
+                createdAt: new Date(2026, 10, 24),
                 subFolders: {
                     create: [
                         {
                             name: "second folder down POGGERS",
+                            createdAt: new Date(2027, 10, 24),
                         },
                         {
                             name: "another folder down",
+                            createdAt: new Date(2028, 10, 24),
                             subFolders: {
                                 create: [
                                     {
                                         name: "third folder down BIG",
+                                        createdAt: new Date(2029, 10, 24),
                                     }
                                 ]
                             }

@@ -33,8 +33,8 @@ export async function getRecursiveParentFolders(
                 id: currentFolder.id,
                 name: currentFolder.name,
                 parentFolderId: currentFolder.parentFolderId,
-                owner: currentFolder.owner
-
+                owner: currentFolder.owner,
+                createdAt: currentFolder.createdAt
             });
         
             currentFolderId = currentFolder.parentFolderId;

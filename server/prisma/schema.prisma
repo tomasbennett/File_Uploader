@@ -36,6 +36,8 @@ model Folder {
   owner   User?   @relation("UserRootFolder")
 
   files    Files[]
+
+  createdAt   DateTime
 }
 
 

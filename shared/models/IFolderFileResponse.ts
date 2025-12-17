@@ -1,10 +1,12 @@
 import z from "zod";
+import { DateFromStringSchema } from "./IDate";
 
 
 const FolderResponseSchema = z.object({
     id: z.string(),
     name: z.string(),
-    parentId: z.string().nullable()
+    parentId: z.string().nullable(),
+    createdAt: DateFromStringSchema
 });
 
 export type IFolderResponse = z.infer<typeof FolderResponseSchema>;
@@ -15,7 +17,7 @@ const FileResponseSchema = z.object({
     id: z.string(),
     name: z.string(),
     parentFolderId: z.string(),
-    createdAt: z.date(),
+    createdAt: DateFromStringSchema,
     size: z.number(),
     fileType: z.string()
 });
