@@ -285,7 +285,10 @@ export function FolderPage() {
 
                             <CWDFoldersFilesDisplay
                                 openFileInfoDialog={dialogFileInfoToggle.openDialog}
-                                setFileInfoData={setFileInfoData} />
+                                setFileInfoData={setFileInfoData}
+                                cwdFiles={fileData}
+                                cwdFolders={folderData}
+                                />
 
                             <DialogDisplayLayout
                                 title="File Information"

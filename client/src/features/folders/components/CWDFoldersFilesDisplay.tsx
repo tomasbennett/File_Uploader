@@ -2,12 +2,15 @@ import React from "react";
 import { FileIcon } from "../../../assets/icons/FileIcon";
 import { FolderIcon } from "../../../assets/icons/FolderIcon";
 import styles from "./CWDFoldersFilesDisplay.module.css";
-import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { IFileResponse, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { Link } from "react-router-dom";
 
 type ICWDFoldersFilesDisplayProps = {
     setFileInfoData: React.Dispatch<React.SetStateAction<IFileResponse | null>>;
     openFileInfoDialog: () => void;
 
+    cwdFolders: IFolderResponse[] | null,
+    cwdFiles: IFileResponse[] | null
 };
 
 
@@ -15,11 +18,14 @@ type ICWDFoldersFilesDisplayProps = {
 
 export function CWDFoldersFilesDisplay({
     setFileInfoData,
-    openFileInfoDialog
+    openFileInfoDialog,
+
+    cwdFiles,
+    cwdFolders
 }: ICWDFoldersFilesDisplayProps) {
 
 
-    
+
 
 
     return (
@@ -38,10 +44,70 @@ export function CWDFoldersFilesDisplay({
 
             <div className={styles.itemsContainer}>
 
+                {
+                    (cwdFiles !== null && cwdFolders !== null) &&
+
+                        (cwdFiles.length > 0 || cwdFolders.length > 0) ? (
+                        <>
+
+                            {
+                                cwdFolders.map((folder) => {
+                                    return (
+                                        <Link to={`/folder/${folder.id}`} className={styles.itemRow}>
+                                            <span className={styles.itemName}>{folder.name}</span>
+                                            <span className={styles.itemType}>
+                                                <FolderIcon />
+                                            </span>
+                                            <span className={styles.itemDate}>December 11, 2025</span>
+                                        </Link>
+                                    )
+                                })
+
+                            }
+                            {
+                                cwdFiles.map((file) => {
+                                    return (
+                                        <div
+                                            key={file.id}
+                                            className={styles.itemRow}
+                                            onClick={() => {
+                                                setFileInfoData({
+                                                    id: file.id,
+                                                    name: file.name,
+                                                    size: file.size,
+                                                    fileType: file.fileType,
+                                                    createdAt: file.createdAt,
+                                                    parentFolderId: file.parentFolderId
+                                                });
+                                                openFileInfoDialog();
+                                            }}
+                                        >
+                                            <span className={styles.itemName}>AHJDBJDF</span>
+                                            <span className={styles.itemType}>
+                                                <FileIcon />
+                                            </span>
+                                            <span className={styles.itemDate}>December 1, 2012</span>
+                                        </div>
+                                    )
+                                })
+
+
+                            }
+
+                        </>
+                    )
+                        :
+
+                        <p className={styles.placeholderText}>No folders or files to display.</p>
+
+
+
+                }
+
                 {/* <p className={styles.placeholderText}>No folders or files to display.</p> */}
 
 
-                <div className={styles.itemRow}>
+                {/* <div className={styles.itemRow}>
                     <span className={styles.itemName}>ProjectPlan.docx</span>
                     <span className={styles.itemType}>
                         <FolderIcon />
@@ -76,7 +142,7 @@ export function CWDFoldersFilesDisplay({
                         <FileIcon />
                     </span>
                     <span className={styles.itemDate}>December 1, 2012</span>
-                </div>
+                </div> */}
 
 
             </div>

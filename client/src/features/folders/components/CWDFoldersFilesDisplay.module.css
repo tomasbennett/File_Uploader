@@ -102,6 +102,8 @@
     align-items: center;
     gap: var(--section-column-gap);
 
+    text-decoration: none;
+
     width: 100%;
     height: 4rem;
 
