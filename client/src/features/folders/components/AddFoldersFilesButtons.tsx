@@ -141,7 +141,7 @@ export function AddFoldersFilesButtons({
                 </p>
                 {
                     isLoading &&
-                        <LoadingCircle width="1.5rem" />
+                        <LoadingCircle width="1.7rem" />
                 }
 
             </button>
