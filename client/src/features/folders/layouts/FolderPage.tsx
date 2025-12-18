@@ -283,6 +283,8 @@ export function FolderPage() {
 
 
                             <AddFoldersFilesButtons
+                                currentFolderId={currentFolderId}
+                                parentFolderId={parentFolderId}
                                 openFolderDialog={dialogFolderToggle.openDialog}
                                 openFileDialog={dialogFileToggle.openDialog}
                                 openShareFolderDialog={dialogShareFolderToggle.openDialog}

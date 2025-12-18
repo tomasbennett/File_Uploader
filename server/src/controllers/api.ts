@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { ensureAuthentication } from "../passport/ensureAuthentication";
 import { prisma } from "../db/prisma";
-import { ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
+import { APIErrorSchema, ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
 import { IFolderFileResponse, IFolderResponse } from "../../../shared/models/IFolderFileResponse";
 import { getRecursiveParentFolders } from "../services/RecursiveParentFolders";
 import { rootFolderName } from "../../../shared/constants";
 import { Folder, Prisma } from "@prisma/client";
 import { INewFolderSubmittable, NewFolderSchema } from "../../../shared/models/INewFolderSchema";
 import { ICustomSuccessMessage } from "../../../shared/models/ISuccessResponse";
+import { getRootFolder } from "../services/RootFolder";
+import { IsUsersFolder } from "../services/IsUsersFolder";
 
 
 export const router = Router();
@@ -174,32 +176,106 @@ router.get(
 router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFolderSubmittable>, res: Response<ICustomErrorResponse | IFolderResponse>, next: NextFunction) => {
     try {
         const request = req.body;
+
+
+
+
+
     
         const result = NewFolderSchema.safeParse(request);
-        if (result.success) {
-            const folder = await prisma.folder.create({
-                data: {
-                    name: result.data.folderName,
-                    parentFolderId: result.data.parentId,
-                    createdAt: new Date()
-                }
-            });
-
-            return res.status(201).json({
-                id: folder.id,
-                createdAt: folder.createdAt,
-                parentId: folder.parentFolderId,
-                name: folder.name
-            });
-
+        if (!result.success) {
+            const customError: ICustomErrorResponse = {
+                ok: false,
+                message: result.error.issues[0].message,
+                status: 400
+            }
+            return res.status(400).json(customError);
+            
         }
 
-        const customError: ICustomErrorResponse = {
-            ok: false,
-            message: result.error.issues[0].message,
-            status: 400
+        // if (result.data.parentId === null) {
+        //     const noParentId: ICustomErrorResponse = {
+        //         ok: false,
+        //         message: "There was no parentId for the inserted folder!!!",
+        //         status: 400
+        //     }
+        //     return res.status(400).json(noParentId);
+        // }
+
+        // const parentFolder = await prisma.folder.findUnique({
+        //     where: {
+        //         id: result.data.parentId
+        //     },
+        //     include: {
+        //         owner: true
+        //     }
+        // });
+
+        // if (!parentFolder) {
+        //     const noParentFolder: ICustomErrorResponse = {
+        //         ok: false,
+        //         message: "There was no parentId for the inserted folder!!!",
+        //         status: 400
+        //     }
+        //     return res.status(400).json(noParentFolder);
+        // }
+
+
+        // const findRootFolder = await getRootFolder(parentFolder.id);
+        // const rootFolder = findRootFolder || parentFolder;
+
+
+
+
+
+        // if (!(rootFolder.owner?.id) || !(req.user?.id)) {
+        //     const unauthorizedError: ICustomErrorResponse = {
+        //         ok: false,
+        //         message: "Unauthorised content!!!",
+        //         status: 403
+        //     }
+        //     return res.status(403).json(unauthorizedError);
+        // }
+
+
+        // if (rootFolder.owner.id !== req.user.id) {
+        //     const unauthorizedError: ICustomErrorResponse = {
+        //         ok: false,
+        //         message: "Unauthorised content!!!",
+        //         status: 403
+        //     }
+        //     return res.status(403).json(unauthorizedError);
+        // }
+
+        const isUsersFolder = await IsUsersFolder(result.data.parentId, req.user);
+
+        if (isUsersFolder instanceof Error) {
+            return next(isUsersFolder);
         }
-        return res.status(400).json(customError);
+
+
+        const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+        if (errorResult.success) {
+            return res.status(errorResult.data.status).json(errorResult.data);
+        }
+
+        
+
+        const folder = await prisma.folder.create({
+            data: {
+                name: result.data.folderName,
+                parentFolderId: result.data.parentId,
+                createdAt: new Date()
+            }
+        });
+
+        return res.status(201).json({
+            id: folder.id,
+            createdAt: folder.createdAt,
+            parentId: folder.parentFolderId,
+            name: folder.name
+        });
+
 
 
     } catch (error) {
@@ -210,3 +286,67 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
 
 
 });
+
+
+router.delete("/folders/:folderId", ensureAuthentication, async (req: Request<{ folderId: string }>, res: Response<ICustomErrorResponse | ICustomSuccessMessage>, next: NextFunction) => {
+    const { folderId } = req.params;
+
+
+    try {
+        const isUsersFolder = await IsUsersFolder(folderId, req.user);
+
+        if (isUsersFolder instanceof Error) {
+            return next(isUsersFolder);
+        }
+
+
+        const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+        if (errorResult.success) {
+            return res.status(errorResult.data.status).json(errorResult.data);
+        }
+
+
+
+
+
+        const folderToDelete = await prisma.folder.findFirst({
+            where: {
+                id: folderId
+            }
+        });
+
+        if (!(folderToDelete?.parentFolderId)) {
+            const rootFolderDeleteError: ICustomErrorResponse = {
+                ok: false,
+                status: 400,
+                message: "Root folders can not be deleted!!!"
+            }
+
+            return res.status(400).json(rootFolderDeleteError);
+        }
+
+        const deletedFolder = await prisma.folder.delete({
+            where: {
+                id: folderId
+            }
+        });
+
+        return res.status(204).json({
+            ok: true,
+            status: 204,
+            message: "Folder successfully deleted!!!"
+        });
+
+
+
+
+
+
+    } catch (error) {
+        next(error);
+        
+    }
+
+
+
+})

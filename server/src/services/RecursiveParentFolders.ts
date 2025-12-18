@@ -1,13 +1,7 @@
 import { Folder, Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { IFolderResponse } from "../../../shared/models/IFolderFileResponse";
-
-type IFolderWithOwner = Prisma.FolderGetPayload<{
-    include: {
-
-        owner: true
-    }
-}>
+import { IFolderWithOwner } from "../models/IFolderWithOwner";
 
 
 export async function getRecursiveParentFolders(

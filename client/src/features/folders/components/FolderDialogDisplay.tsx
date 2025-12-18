@@ -178,10 +178,10 @@ export function FolderDialogDisplay({
                 >
                     {
                         isLoading ?
-                            <LoadingCircle width="3.8rem" />
-
-                            :
-
+                            <LoadingCircle width="3.1rem" />
+                        
+                        :
+                        
                             submitBtnText
                     }
                 </button>

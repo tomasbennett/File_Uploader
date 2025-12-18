@@ -30,7 +30,7 @@ model Folder {
   name     String
 
   parentFolderId  String?   @db.Uuid
-  parentFolder    Folder?   @relation("FolderToFolder", fields: [parentFolderId], references: [id])
+  parentFolder    Folder?   @relation("FolderToFolder", fields: [parentFolderId], references: [id], onDelete: Cascade)
   subFolders      Folder[]  @relation("FolderToFolder")
 
   owner   User?   @relation("UserRootFolder")
@@ -49,5 +49,5 @@ model Files {
   uploadedAt DateTime @default(now())
 
   parentFolderId  String  @db.Uuid
-  parentFolder          Folder   @relation(fields: [parentFolderId], references: [id])
+  parentFolder          Folder   @relation(fields: [parentFolderId], references: [id], onDelete: Cascade)
 }
