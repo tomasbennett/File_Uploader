@@ -2,10 +2,12 @@ import { NextFunction, Request, Response, Router } from "express";
 import { ensureAuthentication } from "../passport/ensureAuthentication";
 import { prisma } from "../db/prisma";
 import { ICustomErrorResponse } from "../../../shared/models/ICustomErrorResponse";
-import { IFolderFileResponse } from "../../../shared/models/IFolderFileResponse";
+import { IFolderFileResponse, IFolderResponse } from "../../../shared/models/IFolderFileResponse";
 import { getRecursiveParentFolders } from "../services/RecursiveParentFolders";
 import { rootFolderName } from "../../../shared/constants";
 import { Folder, Prisma } from "@prisma/client";
+import { INewFolderSubmittable, NewFolderSchema } from "../../../shared/models/INewFolderSchema";
+import { ICustomSuccessMessage } from "../../../shared/models/ISuccessResponse";
 
 
 export const router = Router();
@@ -167,3 +169,44 @@ router.get(
         }
     }
 );
+
+
+router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFolderSubmittable>, res: Response<ICustomErrorResponse | IFolderResponse>, next: NextFunction) => {
+    try {
+        const request = req.body;
+    
+        const result = NewFolderSchema.safeParse(request);
+        if (result.success) {
+            const folder = await prisma.folder.create({
+                data: {
+                    name: result.data.folderName,
+                    parentFolderId: result.data.parentId,
+                    createdAt: new Date()
+                }
+            });
+
+            return res.status(201).json({
+                id: folder.id,
+                createdAt: folder.createdAt,
+                parentId: folder.parentFolderId,
+                name: folder.name
+            });
+
+        }
+
+        const customError: ICustomErrorResponse = {
+            ok: false,
+            message: result.error.issues[0].message,
+            status: 400
+        }
+        return res.status(400).json(customError);
+
+
+    } catch (error) {
+        next(error);
+
+    }
+    
+
+
+});

@@ -10,19 +10,32 @@ export async function errorHandler(
     navigate: NavigateFunction,
     setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>,
 
-    abortController: AbortController
+    abortController: AbortController,
+
+    body?: any
 
 ): Promise<Response | null> {
 
     try {
-        const response = await fetch(url, {
+
+        const fetchOptions: RequestInit = {
             method: method,
             credentials: 'include',
             headers: {
                 'Accept': 'application/json'
             },
             signal: abortController.signal
-        });
+        }
+
+        if (method === "POST" && body) {
+            fetchOptions.headers = {
+                ...fetchOptions.headers,
+                'Content-Type': 'application/json'
+            };
+            fetchOptions.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(url, fetchOptions);
 
         if (response.status >= 500 && response.status <= 599) {
 

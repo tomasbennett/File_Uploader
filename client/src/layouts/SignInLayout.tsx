@@ -95,7 +95,6 @@ export function SignInLayout() {
             });
 
             if (response.ok) {
-                // window.location.href = "/";
                 navigate("/", { replace: true });
                 return;
 
@@ -146,9 +145,9 @@ export function SignInLayout() {
                             id="username"
                             name="username"
                             placeholder="Enter your username..."
-                            required
-                            minLength={minUsernamePasswordLength}
-                            maxLength={maxUsernameLength}
+                            // required
+                            // minLength={minUsernamePasswordLength}
+                            // maxLength={maxUsernameLength}
                         />
                     </div>
 
@@ -165,9 +164,9 @@ export function SignInLayout() {
                             id="password"
                             name="password"
                             placeholder="Enter your password..."
-                            required
-                            minLength={minUsernamePasswordLength}
-                            maxLength={maxUsernameLength}
+                            // required
+                            // minLength={minUsernamePasswordLength}
+                            // maxLength={maxUsernameLength}
                         />
                     </div>
 

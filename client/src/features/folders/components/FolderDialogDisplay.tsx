@@ -1,11 +1,28 @@
+import { FormEvent, useEffect, useRef, useState } from "react";
 import styles from "./FolderDialogDisplay.module.css";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { INewFolderForm, INewFolderSubmittable, NewFolderFormSchema, NewFolderSchema } from "../../../../../shared/models/INewFolderSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { errorHandler } from "../services/ErrorHandler";
+import { domain } from "../../../services/EnvironmentAPI";
+import { useNavigate } from "react-router-dom";
+import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
+import { jsonParsingError, notExpectedFormatError } from "../constants";
+import { LoadingCircle } from "../../../components/LoadingCircle";
+import { FolderResponseSchema, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
 
 
 type IFolderDialogDisplayProps = {
     placeholder?: string,
     submitBtnText: string
 
-    submitUrl: string
+    submitUrl: string,
+
+    closeDialog: (postCloseAction?: () => void) => void,
+
+    // setIsFoldersLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setFoldersData: React.Dispatch<React.SetStateAction<IFolderResponse[] | null>>,
+    parentId: string | null
 };
 
 
@@ -13,25 +30,160 @@ export function FolderDialogDisplay({
     placeholder = "Please enter your new folder name here...",
     submitBtnText,
 
-    submitUrl
+    closeDialog,
+
+    setFoldersData,
+    // setIsFoldersLoading,
+
+    submitUrl,
+    parentId
 }: IFolderDialogDisplayProps) {
+
+    const navigate = useNavigate();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
+
+
+    const {
+        register,
+        formState: { errors },
+        setError,
+        clearErrors,
+        handleSubmit,
+        reset
+
+    } = useForm<INewFolderForm>({
+        resolver: zodResolver(NewFolderFormSchema),
+        mode: "onSubmit",
+        reValidateMode: "onChange",
+    });
+
+
+
+    const abortController = useRef<AbortController | null>(null);
+
+    const onSubmit: SubmitHandler<INewFolderForm> = async (data) => {
+        const url: string = `${domain}/api/folders`
+
+        setIsLoading(true);
+
+
+        try {
+            abortController.current?.abort();
+            abortController.current = new AbortController();
+
+
+            const submitData: INewFolderSubmittable = {
+                ...data,
+                parentId: parentId
+            }
+
+            console.dir(submitData)
+
+            const response: Response | null = await errorHandler(
+                url,
+                "POST",
+                navigate,
+                setIsError,
+                abortController.current,
+                submitData
+            );
+
+            if (response === null) {
+                return;
+            }
+
+
+            const jsonData = await response.json();
+
+            const foldersDataResult = FolderResponseSchema.safeParse(jsonData);
+            if (foldersDataResult.success && response.status === 201) {
+                
+                setFoldersData(prev => {
+                    if (prev !== null) 
+                        return [...prev, foldersDataResult.data]
+
+                    return [foldersDataResult.data]
+                });
+
+
+                closeDialog();
+                clearErrors();
+                reset();
+
+
+
+                return;
+
+            }
+
+
+            const errorResponseResult = APIErrorSchema.safeParse(jsonData);
+            if (errorResponseResult.success) {
+                setIsError(errorResponseResult.data);
+                return;
+
+
+            }
+
+
+            setIsError(notExpectedFormatError);
+            return;
+
+
+        } catch (error) {
+            setIsError(jsonParsingError);
+            return;
+
+        } finally {
+            setIsLoading(false);
+
+        }
+
+    }
+
+    useEffect(() => {
+        console.log(isError);
+    }, [isError]);
+
     return (
         <div className={styles.folderDialogContainer}>
 
-            <form className={styles.form} action={submitUrl} method="post">
+            <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
 
-                <input 
-                    type="text" 
-                    name="folderName" 
-                    placeholder={placeholder}
-                    className={styles.folderNameInput}
+                <div className={styles.inputContainer}>
+
+                    <input
+                        {...register("folderName")}
+                        type="text"
+                        name="folderName"
+                        id="folderName"
+                        placeholder={placeholder}
+                        className={styles.folderNameInput}
                     />
 
-                <button 
-                    type="submit" 
+                    {
+                        errors.folderName &&
+                            <p className={styles.errorMessage}>{errors.folderName.message}</p>
+                    }
+                    
+                </div>
+
+
+
+                <button
+                    type="submit"
                     className={styles.createFolderBtn}
-                    >
-                    {submitBtnText}
+                >
+                    {
+                        isLoading ?
+                            <LoadingCircle width="3.8rem" />
+
+                            :
+
+                            submitBtnText
+                    }
                 </button>
 
             </form>

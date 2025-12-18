@@ -9,3 +9,6 @@ export const APIErrorSchema = z.object({
 
 
 export type ICustomErrorResponse = z.infer<typeof APIErrorSchema>;
+
+
+

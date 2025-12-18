@@ -6,7 +6,7 @@ import styles from "./FolderSidebarDisplay.module.css";
 type IFolderSidebarDisplayProps = {
     folders: IFolderResponse[] | null,
     isRoot: boolean,
-    parentFolderId: string | undefined
+    parentFolderId: string | null
 }
 
 

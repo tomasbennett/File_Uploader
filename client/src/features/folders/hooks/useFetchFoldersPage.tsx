@@ -4,7 +4,7 @@ import { IFolderResponse, IFileResponse, FolderFileResponseSchema, IFolderFileRe
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
 import { ISignInError } from "../../../../../shared/constants";
-import { jsonParsingError } from "../constants";
+import { jsonParsingError, notExpectedFormatError } from "../constants";
 import { errorHandler } from "../services/ErrorHandler";
 
 
@@ -136,11 +136,6 @@ export function useFetchFoldersPage({
 
                 }
 
-                const notExpectedFormatError: ICustomErrorResponse = {
-                    ok: false,
-                    status: 0,
-                    message: "The returned data was not in the correct format!!!"
-                }
                 setIsError(notExpectedFormatError);
                 return null;
 

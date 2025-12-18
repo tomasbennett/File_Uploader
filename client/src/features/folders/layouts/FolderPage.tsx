@@ -108,14 +108,27 @@ export function FolderPage() {
     }, [parentFolders]);
 
 
-    const parentFolderId = useMemo<string | undefined>(() => {
+    const parentFolderId = useMemo<string | null>(() => {
         if (parentFolders === null) {
-            return undefined;
+            return null;
         }
 
-        return parentFolders[1]?.id;
+        if (parentFolders.length <= 1) {
+            return null;
+        }
+
+        return parentFolders[1].id;
 
     }, [parentFolders])
+
+
+    const currentFolderId = useMemo<string | null>(() => {
+        if (parentFolders === null) return null;
+
+        return parentFolders[0].id;
+
+    }, [parentFolders])
+
 
     const navigate = useNavigate();
 
@@ -226,6 +239,9 @@ export function FolderPage() {
                                 dialogRef={dialogFolderToggle.dialogRef}
                             >
                                 <FolderDialogDisplay
+                                    parentId={currentFolderId}
+                                    setFoldersData={setFolderData}
+                                    closeDialog={dialogFolderToggle.closeDialog}
                                     submitBtnText="Create Folder"
                                     submitUrl="/folders/create-folder"
                                     placeholder="Please enter your new folder name here..."
