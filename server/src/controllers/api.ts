@@ -31,6 +31,25 @@ router.get(
 
             }
 
+
+
+            
+
+            const isUsersFolder = await IsUsersFolder(pathId, reqUser);
+
+            if (isUsersFolder instanceof Error) {
+                return next(isUsersFolder);
+            }
+    
+            const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+            if (errorResult.success) {
+                return res.status(errorResult.data.status).json(errorResult.data);
+            }
+
+
+
+
+
             const folder: Prisma.FolderGetPayload<{
                 include: {
                     files: true,

@@ -12,6 +12,7 @@ import passport from "passport";
 import { router as signInRouter } from "./controllers/sign-in";
 import { router as authRouter } from "./controllers/auth";
 import { router as apiRouter } from "./controllers/api";
+import { router as publicFoldersRouter } from "./controllers/public";
 
 
 import "./passport/passportConfig";
@@ -85,6 +86,7 @@ app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
 app.use("/sign-in", signInRouter);
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
+app.use("/api", publicFoldersRouter);
 
 
 
