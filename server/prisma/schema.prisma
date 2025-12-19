@@ -80,4 +80,7 @@ model SharedNode {
   parentNodeId String?      @db.Uuid
   parentNode   SharedNode?  @relation("SharedNodeToSharedNode", fields: [parentNodeId], references: [id], onDelete: Cascade)
   childNodes   SharedNode[] @relation("SharedNodeToSharedNode")
+
+  @@unique([sharedRelationshipId, folderId])
+  @@unique([sharedRelationshipId, fileId])
 }

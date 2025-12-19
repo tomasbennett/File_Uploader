@@ -268,7 +268,7 @@ export function FolderPage() {
                                 dialogRef={dialogShareFolderToggle.dialogRef}
                             >
 
-                                <ShareFolderDialogDisplay />
+                                <ShareFolderDialogDisplay folderId={currentFolderId} />
 
                             </DialogDisplayLayout>
 

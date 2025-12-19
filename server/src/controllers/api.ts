@@ -302,6 +302,7 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
         });
 
         if (sharedFolderConnections.length > 0) {
+            //THIS CHECKS FOR HOW MANY SESSIONS THE PARENT FOLDER IS A PART OF AS REMEMBER IT CAN TECHNICALLY BE PART OF MULTIPLE SESSIONS SHARED AT THE SAME TIME
             for (const sharedConnection of sharedFolderConnections) {
 
                 await prisma.sharedNode.create({

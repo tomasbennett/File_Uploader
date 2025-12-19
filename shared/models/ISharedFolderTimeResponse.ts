@@ -14,8 +14,8 @@ export type IShareDuration = z.infer<typeof ShareDurationSchema>;
 
 
 export const SharedFolderTimeResponseSchema = z.object({
-    server_modified: z.string().optional().nullable(),
-    client_modified: z.string().optional().nullable(),
+    duration: NumberFromStringSchema,
+    folderId: z.string({ message: "Folder ID is required and needs to be a string!!!" }),
 });
 
 
