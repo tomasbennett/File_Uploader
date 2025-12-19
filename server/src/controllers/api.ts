@@ -22,9 +22,9 @@ router.get(
     async (req: Request<{ pathId: string }>, res: Response<ICustomErrorResponse | IFolderFileResponse>, next: NextFunction) => {
         let { pathId } = req.params;
 
-        
+
         try {
-            
+
             const reqUser = req.user!;
             if (pathId === rootFolderName) {
                 pathId = reqUser.rootFolderId;
@@ -33,15 +33,15 @@ router.get(
 
 
 
-            
+
 
             const isUsersFolder = await IsUsersFolder(pathId, reqUser);
 
             if (isUsersFolder instanceof Error) {
                 return next(isUsersFolder);
             }
-    
-            const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+
+            const errorResult = APIErrorSchema.safeParse(isUsersFolder);
             if (errorResult.success) {
                 return res.status(errorResult.data.status).json(errorResult.data);
             }
@@ -78,7 +78,7 @@ router.get(
             }
 
 
-            
+
             const parentFolders = await getRecursiveParentFolders(folder.parentFolderId);
             parentFolders.unshift({
                 id: folder.id,
@@ -115,7 +115,7 @@ router.get(
 
 
             // if (parentFoldersLength === 0) {
-                
+
 
             // }
 
@@ -132,7 +132,7 @@ router.get(
 
 
 
-            
+
             // const folder = await prisma.folder.findUnique({
             //     where: {
             //         id: pathId,
@@ -198,9 +198,6 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
 
 
 
-
-
-    
         const result = NewFolderSchema.safeParse(request);
         if (!result.success) {
             const customError: ICustomErrorResponse = {
@@ -209,7 +206,7 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
                 status: 400
             }
             return res.status(400).json(customError);
-            
+
         }
 
         // if (result.data.parentId === null) {
@@ -273,12 +270,22 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
         }
 
 
-        const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+        const errorResult = APIErrorSchema.safeParse(isUsersFolder);
         if (errorResult.success) {
             return res.status(errorResult.data.status).json(errorResult.data);
         }
 
-        
+
+
+        //SO I WANT TO SAY: IF THE PARENTFOLDER IS A SHAREDFOLDER THEN: 
+        // - THE NEW FOLDER SHOULD ALSO BE A SHARED FOLDER
+        // + WE FIND THIS OUT BY CHECKING IF THE PARENTFOLDERID CAN BE FOUND IN THE SHARED FOLDERS TABLE: IF IT CAN BE:
+        // - WE TAKE THE NEW FOLDER AND FOREACH TIME THE PARENTFOLDERID IS FOUND IN THE SHARED FOLDERS TABLE WE CREATE A NEW ENTRY IN THE SHARED FOLDERS TABLE WITH THE NEW FOLDER ID
+        // ! FIRST: WE CHECK IF THAT CONNECTION WITH SHARED TABLE IS STILL ALIVE AND IF NOT THEN WE DELETE THE ENTIRE CONNECTION
+        // ! NOTE: WE WILL HAVE TO DO THIS WHEN GETTING SHARED FOLDERS AS WELL SO THIS ENTIRE PROCESS SHOULD PROBABLY BE A SERVICE FUNCTION
+        // ! ACTUALLY: LETS DO THE TWO ABOVE ONLY WHEN GETTING SHARED FOLDERS
+
+        // ! ACTUAL FIRST: WE NEED TO CHECK IF THE PARENT FOLDER IS A SHARED FOLDER OR NOT
 
         const folder = await prisma.folder.create({
             data: {
@@ -287,6 +294,28 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
                 createdAt: new Date()
             }
         });
+
+        const sharedFolderConnections = await prisma.sharedNode.findMany({
+            where: {
+                folderId: result.data.parentId!
+            }
+        });
+
+        if (sharedFolderConnections.length > 0) {
+            for (const sharedConnection of sharedFolderConnections) {
+
+                await prisma.sharedNode.create({
+                    data: {
+
+                        sharedRelationshipId: sharedConnection.sharedRelationshipId,
+                        folderId: folder.id,
+                        parentNodeId: sharedConnection.id
+
+                    }
+                });
+            }
+        }
+
 
         return res.status(201).json({
             id: folder.id,
@@ -301,7 +330,7 @@ router.post("/folders", ensureAuthentication, async (req: Request<{}, {}, INewFo
         next(error);
 
     }
-    
+
 
 
 });
@@ -319,7 +348,7 @@ router.delete("/folders/:folderId", ensureAuthentication, async (req: Request<{ 
         }
 
 
-        const errorResult = APIErrorSchema.safeParse(isUsersFolder); 
+        const errorResult = APIErrorSchema.safeParse(isUsersFolder);
         if (errorResult.success) {
             return res.status(errorResult.data.status).json(errorResult.data);
         }
@@ -363,7 +392,7 @@ router.delete("/folders/:folderId", ensureAuthentication, async (req: Request<{ 
 
     } catch (error) {
         next(error);
-        
+
     }
 
 
