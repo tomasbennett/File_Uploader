@@ -89,3 +89,12 @@
 
     margin-top: 1rem;
 }
+
+
+.errorMessage{
+    /* font-size: 1.4rem; */
+    color: red;
+    text-align: center;
+
+    margin-top: 1rem;
+}
