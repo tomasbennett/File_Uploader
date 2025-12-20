@@ -5,12 +5,12 @@
 .header{
     font-size: 4rem;
     font-weight: 600;
-    color: var(--light-text-colour);
+    /* color: var(--light-text-colour); */
     margin-bottom: 1rem;
 }
 
 
 .desc{
     font-size: 1.5rem;
-    color: var(--soft-light-text-colour);
+    /* color: var(--soft-light-text-colour); */
 }

@@ -5,12 +5,16 @@ import { Link } from "react-router-dom";
 
 
 type IParentFolderRouteDisplayProps = {
-    parentFolders: IFolderResponse[] | null
+    parentFolders: IFolderResponse[] | null,
+
+    foldersUrl: string
 }
 
 
 export function ParentFolderRouteDisplay({
-    parentFolders
+    parentFolders,
+
+    foldersUrl
 }: IParentFolderRouteDisplayProps) {
 
 
@@ -38,7 +42,7 @@ export function ParentFolderRouteDisplay({
                         return (
                             <React.Fragment key={folder.id}>
 
-                                <Link className={styles.folderRouteItem} to={`/folder/${folder.id}`}>
+                                <Link className={styles.folderRouteItem} to={`${foldersUrl}${folder.id}`}>
                                     {folder.name}
                                 </Link>
                                 <span className={styles.separator}>&gt;</span>

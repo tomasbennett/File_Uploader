@@ -11,7 +11,9 @@ type ICWDFoldersFilesDisplayProps = {
     openFileInfoDialog: () => void;
 
     cwdFolders: IFolderResponse[] | null,
-    cwdFiles: IFileResponse[] | null
+    cwdFiles: IFileResponse[] | null,
+
+    foldersUrl: string
 };
 
 
@@ -22,7 +24,9 @@ export function CWDFoldersFilesDisplay({
     openFileInfoDialog,
 
     cwdFiles,
-    cwdFolders
+    cwdFolders,
+
+    foldersUrl
 }: ICWDFoldersFilesDisplayProps) {
 
 
@@ -54,7 +58,7 @@ export function CWDFoldersFilesDisplay({
                             {
                                 cwdFolders.map((folder) => {
                                     return (
-                                        <Link key={folder.id} to={`/folder/${folder.id}`} className={styles.itemRow}>
+                                        <Link key={folder.id} to={`${foldersUrl}${folder.id}`} className={styles.itemRow}>
                                             <span className={styles.itemName}>{folder.name}</span>
                                             <span className={styles.itemType}>
                                                 <FolderIcon />

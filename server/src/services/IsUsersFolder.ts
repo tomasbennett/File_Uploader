@@ -31,7 +31,7 @@ export async function IsUsersFolder(
             const noFolder: ICustomErrorResponse = {
                 ok: false,
                 message: "There was no folder found for the inserted folderId!!!",
-                status: 400
+                status: 404
             }
             return noFolder;
         }

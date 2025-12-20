@@ -44,6 +44,8 @@ type IFolderPageProps = {
     setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>;
 
     abortController: React.MutableRefObject<AbortController | null>;
+
+    foldersUrl: string;
 }
 
 
@@ -67,7 +69,9 @@ export function FolderPage({
 
     setIsError,
 
-    abortController
+    abortController,
+
+    foldersUrl
 }: IFolderPageProps) {
 
     // const { folderId } = useParams<{ folderId: string }>();
@@ -354,6 +358,7 @@ export function FolderPage({
 
 
                             <FolderSidebarDisplay
+                                foldersUrl={foldersUrl}
                                 parentFolderId={parentFolderId}
                                 isRoot={isRoot}
                                 folders={folderData} />
@@ -365,6 +370,7 @@ export function FolderPage({
 
 
                             <ParentFolderRouteDisplay
+                                foldersUrl={foldersUrl}
                                 parentFolders={parentFolders}
                             />
 
@@ -373,6 +379,7 @@ export function FolderPage({
                                 setFileInfoData={setFileInfoData}
                                 cwdFiles={fileData}
                                 cwdFolders={folderData}
+                                foldersUrl={foldersUrl}
                                 />
 
                             <DialogDisplayLayout

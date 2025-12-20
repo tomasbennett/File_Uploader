@@ -58,19 +58,25 @@ export function PrivateFolderPage() {
     }, [parentFolders]);
 
     return (
-        <FolderPage asideBtnContainer={
-            <AddFoldersFilesButtons
-                currentFolderId={currentFolderId}
-                parentFolderId={parentFolderId}
-                openFolderDialog={dialogFolderToggle.openDialog}
-                openFileDialog={dialogFileToggle.openDialog}
-                openShareFolderDialog={dialogShareFolderToggle.openDialog}
+        <FolderPage 
+            foldersUrl="/folder/"
+            dialogFileToggle={dialogFileToggle}
+            dialogFolderToggle={dialogFolderToggle}
+            dialogShareFolderToggle={dialogShareFolderToggle}
+            currentFolderId={currentFolderId}
+            asideBtnContainer={
+                <AddFoldersFilesButtons
+                    currentFolderId={currentFolderId}
+                    parentFolderId={parentFolderId}
+                    openFolderDialog={dialogFolderToggle.openDialog}
+                    openFileDialog={dialogFileToggle.openDialog}
+                    openShareFolderDialog={dialogShareFolderToggle.openDialog}
 
 
-            />
+                />
 
 
-        }
+            }
             parentFolderId={parentFolderId}
             parentFolders={parentFolders}
             setParentFolders={setParentFolders}

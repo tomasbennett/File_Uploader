@@ -42,6 +42,7 @@ export function PublicFolderPage() {
 
     return (
         <FolderPage
+            foldersUrl="/folder/public/"
             parentFolders={parentFolders}
             parentFolderId={parentFolderId}
             setParentFolders={setParentFolders}

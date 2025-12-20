@@ -6,14 +6,18 @@ import styles from "./FolderSidebarDisplay.module.css";
 type IFolderSidebarDisplayProps = {
     folders: IFolderResponse[] | null,
     isRoot: boolean,
-    parentFolderId: string | null
+    parentFolderId: string | null,
+
+    foldersUrl: string
 }
 
 
 export function FolderSidebarDisplay({
     folders,
     isRoot,
-    parentFolderId
+    parentFolderId,
+
+    foldersUrl
 }: IFolderSidebarDisplayProps) {
 
 
@@ -25,7 +29,7 @@ export function FolderSidebarDisplay({
                 {
                     !isRoot && parentFolderId &&
                     <li>
-                        <Link className={styles.folderItem} to={`/folder/${parentFolderId}`}>
+                        <Link className={styles.folderItem} to={`${foldersUrl}${parentFolderId}`}>
                             <FolderIcon />
                             <p>..</p>
                         </Link>
@@ -35,7 +39,7 @@ export function FolderSidebarDisplay({
                     folders?.map((folder, indx) => {
                         return (
                             <li key={folder.id}>
-                                <Link className={styles.folderItem} to={`/folder/${folder.id}`}>
+                                <Link className={styles.folderItem} to={`${foldersUrl}${folder.id}`}>
                                     <FolderIcon />
                                     <p>{folder.name}</p>
                                 </Link>

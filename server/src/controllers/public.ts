@@ -6,7 +6,7 @@ import { IsUsersFolder } from "../services/IsUsersFolder";
 import { prisma } from "../db/prisma";
 import { SharedNode } from "@prisma/client";
 import { dateFromNow, isDateInPast } from "../services/DateFromNow";
-import { allSubfoldersRecursivelyCommand } from "../services/RecursiveSubFolderCommand";
+import { recursiveSubFolderCommand } from "../services/RecursiveSubFolderCommand";
 import { IGeneratedLinkResponse } from "../../../shared/models/IGeneratedLinkResponse";
 import { IFileResponse, IFolderFileResponse, IFolderResponse } from "../../../shared/models/IFolderFileResponse";
 import { recursiveSharedNodeParent } from "../services/RecursiveSharedNodeParent";
@@ -161,7 +161,7 @@ router.get("/public/:sharedNodeId", async (req: Request<{ sharedNodeId: string }
 
 
 
-router.post("/public", ensureAuthentication, async (req: Request<{}, {}, ISharedFolderTimeResponse>, res: Response<ICustomErrorResponse | IGeneratedLinkResponse>, next: NextFunction) => {
+router.post("/public", ensureAuthentication, async (req: Request<{}, {}, ISharedFolderTimeResponse>, res: Response<ICustomErrorResponse | IGeneratedLinkResponse | any>, next: NextFunction) => {
 
     const durationResult = SharedFolderTimeResponseSchema.safeParse(req.body);
     if (!durationResult.success) {
@@ -284,57 +284,64 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
 
 
 
-        const subFolderFileIds = await allSubfoldersRecursivelyCommand(folder.id, rootSharedNode.id);
+        const subFolderFileIds = await recursiveSubFolderCommand(
+            folder.id,
+            newSharedSession.id,
+            rootSharedNode.id
+        );
+
+        // return res.status(200).json(subFolderFileIds);
+
 
         if (subFolderFileIds instanceof Error) {
             return next(subFolderFileIds);
         }
 
-        subFolderFileIds.folderIds.forEach(async (folderId) => {
-            await prisma.sharedNode.create({
-                data: {
+        // subFolderFileIds.folderIds.forEach(async (folderId) => {
+        //     await prisma.sharedNode.create({
+        //         data: {
 
-                    sharedRelationshipId: newSharedSession.id,
-                    folderId: folderId.folderId,
-                    parentNodeId: folderId.parentSharedNodeId
-
-                }
-            });
-        });
-
-        subFolderFileIds.fileIds.forEach(async (fileId) => {
-            await prisma.sharedNode.create({
-                data: {
-
-                    sharedRelationshipId: newSharedSession.id,
-                    fileId: fileId.fileId,
-                    parentNodeId: fileId.parentSharedNodeId
-
-                }
-            });
-        })
-
-
-        // const sessionParentNode = await prisma.sharedNode.findUnique({
-        //     where: {
-        //         sharedRelationshipId_folderId: {
-
-        //             folderId: folder.id,
-        //             sharedRelationshipId: newSharedSession.id
+        //             sharedRelationshipId: newSharedSession.id,
+        //             folderId: folderId.folderId,
+        //             parentNodeId: folderId.parentSharedNodeId
 
         //         }
-        //     }
+        //     });
         // });
 
-        // if (!sessionParentNode) {
-        //     const parentNodeMissingError: ICustomErrorResponse = {
-        //         message: "Shared session parent node is missing. Shared link data is corrupted. Please contact support.",
-        //         ok: false,
-        //         status: 500
-        //     };
+        // subFolderFileIds.fileIds.forEach(async (fileId) => {
+        //     await prisma.sharedNode.create({
+        //         data: {
 
-        //     return res.status(500).json(parentNodeMissingError);
-        // }
+        //             sharedRelationshipId: newSharedSession.id,
+        //             fileId: fileId.fileId,
+        //             parentNodeId: fileId.parentSharedNodeId
+
+        //         }
+        //     });
+        // })
+
+
+        // // const sessionParentNode = await prisma.sharedNode.findUnique({
+        // //     where: {
+        // //         sharedRelationshipId_folderId: {
+
+        // //             folderId: folder.id,
+        // //             sharedRelationshipId: newSharedSession.id
+
+        // //         }
+        // //     }
+        // // });
+
+        // // if (!sessionParentNode) {
+        // //     const parentNodeMissingError: ICustomErrorResponse = {
+        // //         message: "Shared session parent node is missing. Shared link data is corrupted. Please contact support.",
+        // //         ok: false,
+        // //         status: 500
+        // //     };
+
+        // //     return res.status(500).json(parentNodeMissingError);
+        // // }
 
 
         const generatedLinkResponse: IGeneratedLinkResponse = {

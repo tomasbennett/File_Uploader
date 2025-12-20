@@ -1,67 +1,135 @@
+// import { prisma } from "../db/prisma";
+
 import { prisma } from "../db/prisma";
 
 
-type IFolderIdsWithParent = {
-    folderId: string,
-    parentSharedNodeId: string
-}[];
+// type IFolderIdsWithParent = {
+//     folderId: string,
+//     parentSharedNodeId: string
+// }[];
 
-type IFileIdsWithParent = {
-    fileId: string,
-    parentSharedNodeId: string
-}[];
+// type IFileIdsWithParent = {
+//     fileId: string,
+//     parentSharedNodeId: string
+// }[];
 
 
-type FolderTreeIds = {
-    folderIds: IFolderIdsWithParent,
-    fileIds: IFileIdsWithParent;
-};
+// type FolderTreeIds = {
+//     folderIds: IFolderIdsWithParent,
+//     fileIds: IFileIdsWithParent;
+// };
 
-export async function allSubfoldersRecursivelyCommand(
+// export async function allSubfoldersRecursivelyCommand(
+//     rootFolderId: string,
+//     parentSharedNodeId: string
+// ): Promise<FolderTreeIds | Error> {
+
+//     const folderQueue: IFolderIdsWithParent = [{ folderId: rootFolderId, parentSharedNodeId: parentSharedNodeId }]
+//     const folderIds: IFolderIdsWithParent = [];
+//     const fileIds: IFileIdsWithParent = [];
+
+//     try {
+//         while (folderQueue.length > 0) {
+//             const currentFolderId = folderQueue.shift()!;
+
+//             folderIds.push({ folderId: currentFolderId.folderId, parentSharedNodeId: currentFolderId.parentSharedNodeId });
+
+//             const files = await prisma.files.findMany({
+//                 where: { parentFolderId: currentFolderId.folderId },
+//                 select: { id: true }
+//             });
+
+//             for (const file of files) {
+//                 fileIds.push({
+//                     fileId: file.id,
+//                     parentSharedNodeId: currentFolderId.parentSharedNodeId
+//                 });
+//             }
+
+//             const subfolders = await prisma.folder.findMany({
+//                 where: { parentFolderId: currentFolderId.folderId },
+//                 select: { id: true }
+//             });
+
+//             for (const subfolder of subfolders) {
+//                 folderQueue.push({
+//                     folderId: subfolder.id,
+//                     parentSharedNodeId: currentFolderId.parentSharedNodeId
+//                 });
+//             }
+//         }
+
+//         return { folderIds, fileIds };
+
+//     } catch (error) {
+//         return error instanceof Error
+//             ? error
+//             : new Error("Unknown error while traversing folder tree for sharing nodes!!!");
+//     }
+// }
+
+
+
+export async function recursiveSubFolderCommand(
     rootFolderId: string,
+    sessionId: string,
     parentSharedNodeId: string
-): Promise<FolderTreeIds | Error> {
-
-    const folderQueue: IFolderIdsWithParent = [{ folderId: rootFolderId, parentSharedNodeId: parentSharedNodeId }]
-    const folderIds: IFolderIdsWithParent = [];
-    const fileIds: IFileIdsWithParent = [];
-
+): Promise<void | Error> {
     try {
-        while (folderQueue.length > 0) {
-            const currentFolderId = folderQueue.shift()!;
+        let currentFolderId: string | null = rootFolderId;
+        let parentSharedNodeIdCurrent: string | null = parentSharedNodeId;
 
-            folderIds.push({ folderId: currentFolderId.folderId, parentSharedNodeId: currentFolderId.parentSharedNodeId });
 
-            const files = await prisma.files.findMany({
-                where: { parentFolderId: currentFolderId.folderId },
-                select: { id: true }
-            });
+        const files = await prisma.files.findMany({
+            where: { parentFolderId: currentFolderId },
+            select: { id: true }
+        });
 
-            for (const file of files) {
-                fileIds.push({
+        for (const file of files) {
+            await prisma.sharedNode.create({
+                data: {
+                    parentNodeId: parentSharedNodeIdCurrent,
                     fileId: file.id,
-                    parentSharedNodeId: currentFolderId.parentSharedNodeId
-                });
-            }
+                    sharedRelationshipId: sessionId
+                }
+            });
+        }
 
-            const subfolders = await prisma.folder.findMany({
-                where: { parentFolderId: currentFolderId.folderId },
-                select: { id: true }
+
+        const subfolders = await prisma.folder.findMany({
+            where: { parentFolderId: currentFolderId },
+            select: { id: true }
+        });
+
+
+        for (const subfolder of subfolders) {
+            const newSharedNode = await prisma.sharedNode.create({
+                data: {
+                    parentNodeId: parentSharedNodeIdCurrent,
+                    folderId: subfolder.id,
+                    sharedRelationshipId: sessionId
+                }
             });
 
-            for (const subfolder of subfolders) {
-                folderQueue.push({
-                    folderId: subfolder.id,
-                    parentSharedNodeId: currentFolderId.parentSharedNodeId
-                });
+            const result = await recursiveSubFolderCommand(
+                subfolder.id,
+                sessionId,
+                newSharedNode.id
+            );
+
+            if (result instanceof Error) {
+                return result;
             }
         }
 
-        return { folderIds, fileIds };
+
+
+
 
     } catch (error) {
         return error instanceof Error
             ? error
-            : new Error("Unknown error while traversing folder tree for sharing nodes!!!");
+            : new Error("Unknown error while creating subfolder sharing nodes!!!");
+
     }
 }
