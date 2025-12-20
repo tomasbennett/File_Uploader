@@ -114,6 +114,8 @@ export function useFetchFoldersPage({
 
             }
 
+            
+
 
             try {
                 const jsonData = await response.json();
@@ -132,6 +134,22 @@ export function useFetchFoldersPage({
                 if (errorResult.success) {
                     console.log("success error!!!");
                     setIsError(errorResult.data);
+
+
+                    if (errorResult.data.status === 404) {
+
+                        navigate('/error', {
+                            replace: true,
+                            state: {
+                                error: errorResult.data
+                            }
+                        });
+                        
+                    }
+
+
+
+
                     return null;
 
                 }
