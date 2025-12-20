@@ -1,0 +1,1 @@
+export type IUseDialogToggleReturn = { dialogRef: React.RefObject<HTMLDialogElement | null>; openDialog: () => void; closeDialog: (postCloseAction?: () => void) => void; handleClickOutside: (event: React.MouseEvent<HTMLDialogElement>, postCloseAction?: () => void) => void; };

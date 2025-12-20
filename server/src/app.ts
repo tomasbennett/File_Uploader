@@ -17,6 +17,7 @@ import { router as publicFoldersRouter } from "./controllers/public";
 
 import "./passport/passportConfig";
 import { environment } from "../../shared/constants";
+import { ICustomErrorResponse } from "../../shared/models/ICustomErrorResponse";
 
 
 
@@ -88,7 +89,14 @@ app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use("/api", publicFoldersRouter);
 
-
+app.use((err: Error, req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+    status: 500,
+    ok: false,
+  });
+});
 
 
 const PORT = process.env.PORT || 3000;

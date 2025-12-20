@@ -20,72 +20,120 @@ import { domain } from "../../../services/EnvironmentAPI";
 import { errorHandler } from "../services/ErrorHandler";
 import { jsonParsingError } from "../constants";
 
-export function FolderPage() {
 
-    const { folderId } = useParams<{ folderId: string }>();
+type IFolderPageProps = {
+    asideBtnContainer?: React.ReactNode;
+    dialogFolderToggle?: ReturnType<typeof useDialogToggle>;
+    dialogShareFolderToggle?: ReturnType<typeof useDialogToggle>;
+    dialogFileToggle?: ReturnType<typeof useDialogToggle>;
 
+    currentFolderId?: string | null;
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
+    parentFolders: IFolderResponse[] | null;
+    setParentFolders: React.Dispatch<React.SetStateAction<IFolderResponse[] | null>>;
 
-    const [folderData, setFolderData] = useState<IFolderResponse[] | null>(null);
-    const [fileData, setFileData] = useState<IFileResponse[] | null>(null);
-    const [parentFolders, setParentFolders] = useState<IFolderResponse[] | null>(null);
-
-
-    const abortController = useRef<AbortController | null>(null);
-
-
-    const {
-        getFullPageData
-    } = useFetchFoldersPage(
-        {
-            setIsLoading,
-            setIsError
-        }
-    );
+    parentFolderId: string | null;
 
 
-    useEffect(() => {
+    isLoading: boolean;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    folderData: IFolderResponse[] | null;
+    setFolderData: React.Dispatch<React.SetStateAction<IFolderResponse[] | null>>;
+    fileData: IFileResponse[] | null;
 
-        async function fetchData() {
-            abortController.current?.abort();
+    setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>;
 
-            abortController.current = new AbortController();
-
-            console.log("process started!!!");
-
-            const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(
-                folderId,
-                abortController.current
-            );
-
-            if (folderFilesResponse === null) {
-                console.log("returned null!!!");
-                return;
-
-            }
-
-            console.dir(folderFilesResponse);
-
-            setFolderData(folderFilesResponse.cwdFolders);
-            setFileData(folderFilesResponse.cwdFiles);
-            setParentFolders(folderFilesResponse.parentFolders);
-
-            return;
-
-        }
-
-        fetchData();
+    abortController: React.MutableRefObject<AbortController | null>;
+}
 
 
-    }, [folderId]);
+export function FolderPage({
+    asideBtnContainer,
+    dialogFolderToggle,
+    dialogShareFolderToggle,
+    dialogFileToggle,
+
+    currentFolderId,
+
+    parentFolders,
+    setParentFolders,
+    parentFolderId,
+
+    isLoading,
+    setIsLoading,
+    folderData,
+    setFolderData,
+    fileData,
+
+    setIsError,
+
+    abortController
+}: IFolderPageProps) {
+
+    // const { folderId } = useParams<{ folderId: string }>();
+
+
+    // const [isLoading, setIsLoading] = useState<boolean>(true);
+    // const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
+
+    // const [folderData, setFolderData] = useState<IFolderResponse[] | null>(null);
+    // const [fileData, setFileData] = useState<IFileResponse[] | null>(null);
+    // // const [parentFolders, setParentFolders] = useState<IFolderResponse[] | null>(null);
+
+
+    // const abortController = useRef<AbortController | null>(null);
+
+
+    // const {
+    //     getFullPageData
+    // } = useFetchFoldersPage(
+    //     {
+    //         setIsLoading,
+    //         setIsError
+    //     }
+    // );
+
+
+    // useEffect(() => {
+
+    //     async function fetchData() {
+    //         abortController.current?.abort();
+
+    //         abortController.current = new AbortController();
+
+    //         console.log("process started!!!");
+
+    //         const folderFilesResponse: IFolderFileResponse | null = await getFullPageData(
+    //             folderId,
+    //             abortController.current
+    //         );
+
+    //         if (folderFilesResponse === null) {
+    //             console.log("returned null!!!");
+    //             return;
+
+    //         }
+
+    //         console.dir(folderFilesResponse);
+
+    //         setFolderData(folderFilesResponse.cwdFolders);
+    //         setFileData(folderFilesResponse.cwdFiles);
+    //         setParentFolders(folderFilesResponse.parentFolders);
+
+    //         return;
+
+    //     }
+
+    //     fetchData();
+
+
+    // }, [folderId]);
 
 
 
-    const dialogFolderToggle = useDialogToggle();
-    const dialogFileToggle = useDialogToggle();
-    const dialogShareFolderToggle = useDialogToggle();
+    // const dialogFolderToggle = useDialogToggle();
+    // const dialogFileToggle = useDialogToggle();
+    // const dialogShareFolderToggle = useDialogToggle();
 
     const dialogFileInfoToggle = useDialogToggle();
     const [fileInfoData, setFileInfoData] = useState<IFileResponse | null>(null);
@@ -108,90 +156,90 @@ export function FolderPage() {
     }, [parentFolders]);
 
 
-    const parentFolderId = useMemo<string | null>(() => {
-        if (parentFolders === null) {
-            return null;
-        }
+    // const parentFolderId = useMemo<string | null>(() => {
+    //     if (parentFolders === null) {
+    //         return null;
+    //     }
 
-        if (parentFolders.length <= 1) {
-            return null;
-        }
+    //     if (parentFolders.length <= 1) {
+    //         return null;
+    //     }
 
-        return parentFolders[1].id;
+    //     return parentFolders[1].id;
 
-    }, [parentFolders])
-
-
-    const currentFolderId = useMemo<string | null>(() => {
-        if (parentFolders === null) return null;
-
-        return parentFolders[0].id;
-
-    }, [parentFolders])
+    // }, [parentFolders]);
 
 
-    const navigate = useNavigate();
+    // const currentFolderId = useMemo<string | null>(() => {
+    //     if (parentFolders === null) return null;
 
-    const onLogOut = useCallback(async () => {
-        const url: string = `${domain}/sign-in/logout`;
+    //     return parentFolders[0].id;
 
-        setIsLoading(true);
+    // }, [parentFolders]);
 
-        try {
-            abortController.current?.abort();
 
-            const response: Response | null = await errorHandler(
-                url,
-                "POST",
-                navigate,
-                setIsError,
-                new AbortController()
-            )
+    // const navigate = useNavigate();
 
-            if (response === null) {
-                return;
+    // const onLogOut = useCallback(async () => {
+    //     const url: string = `${domain}/sign-in/logout`;
 
-            }
+    //     setIsLoading(true);
 
-            if (response.status === 200) {
-                navigate("/sign-in/login", { replace: true });
-                return;
+    //     try {
+    //         abortController.current?.abort();
 
-            }
+    //         const response: Response | null = await errorHandler(
+    //             url,
+    //             "POST",
+    //             navigate,
+    //             setIsError,
+    //             new AbortController()
+    //         )
 
-            try {
-                const jsonData = await response.json();
+    //         if (response === null) {
+    //             return;
 
-                const errorResult = APIErrorSchema.safeParse(jsonData);
-                if (errorResult.success) {
-                    setIsError(errorResult.data);
-                    return;
+    //         }
 
-                }
+    //         if (response.status === 200) {
+    //             navigate("/sign-in/login", { replace: true });
+    //             return;
 
-                const notExpectedFormatError: ICustomErrorResponse = {
-                    ok: false,
-                    status: 0,
-                    message: "The returned data from logout was not in the correct format!!!"
-                }
-                setIsError(notExpectedFormatError);
-                return;
+    //         }
 
-            } catch {
-                setIsError(jsonParsingError);
-                return null;
+    //         try {
+    //             const jsonData = await response.json();
 
-            }
+    //             const errorResult = APIErrorSchema.safeParse(jsonData);
+    //             if (errorResult.success) {
+    //                 setIsError(errorResult.data);
+    //                 return;
+
+    //             }
+
+    //             const notExpectedFormatError: ICustomErrorResponse = {
+    //                 ok: false,
+    //                 status: 0,
+    //                 message: "The returned data from logout was not in the correct format!!!"
+    //             }
+    //             setIsError(notExpectedFormatError);
+    //             return;
+
+    //         } catch {
+    //             setIsError(jsonParsingError);
+    //             return null;
+
+    //         }
 
 
             
-        } finally {
-            setIsLoading(false);
+    //     } finally {
+    //         setIsLoading(false);
 
-        }
+    //     }
 
 
-    }, []);
+    // }, []);
 
     // useEffect(() => {
     //     console.log(isError);
@@ -199,9 +247,10 @@ export function FolderPage() {
 
 
     return (
-        <div className={styles.folderPageContainer}>
+        // <div className={styles.folderPageContainer}>
+        <>
 
-            <header className={styles.headerContainer}>
+            {/* <header className={styles.headerContainer}>
 
                 <h1>Folders & Files</h1>
 
@@ -214,7 +263,7 @@ export function FolderPage() {
 
                 </div>
 
-            </header>
+            </header> */}
 
 
 
@@ -232,45 +281,57 @@ export function FolderPage() {
 
                         <aside>
 
-                            <DialogDisplayLayout
-                                title="Add New Folder"
-                                handleClickOutside={dialogFolderToggle.handleClickOutside}
-                                closeDialog={dialogFolderToggle.closeDialog}
-                                dialogRef={dialogFolderToggle.dialogRef}
-                            >
-                                <FolderDialogDisplay
-                                    parentId={currentFolderId}
-                                    setFoldersData={setFolderData}
-                                    closeDialog={dialogFolderToggle.closeDialog}
-                                    submitBtnText="Create Folder"
-                                    submitUrl="/folders/create-folder"
-                                    placeholder="Please enter your new folder name here..."
-                                />
+                            {
+                                dialogFolderToggle && currentFolderId &&
 
-                            </DialogDisplayLayout>
+                                    <DialogDisplayLayout
+                                        title="Add New Folder"
+                                        handleClickOutside={dialogFolderToggle?.handleClickOutside}
+                                        closeDialog={dialogFolderToggle?.closeDialog}
+                                        dialogRef={dialogFolderToggle?.dialogRef}
+                                    >
+                                        <FolderDialogDisplay
+                                            parentId={currentFolderId}
+                                            setFoldersData={setFolderData}
+                                            closeDialog={dialogFolderToggle?.closeDialog}
+                                            submitBtnText="Create Folder"
+                                            submitUrl="/folders/create-folder"
+                                            placeholder="Please enter your new folder name here..."
+                                        />
+
+                                    </DialogDisplayLayout>
+                            }
+
+                            {
+                                dialogFileToggle &&
+
+                                    <DialogDisplayLayout
+                                        title="Add New File"
+                                        handleClickOutside={dialogFileToggle?.handleClickOutside}
+                                        closeDialog={dialogFileToggle?.closeDialog}
+                                        dialogRef={dialogFileToggle?.dialogRef}
+                                    >
+                                        <NewFileDisplay />
+
+                                    </DialogDisplayLayout>
+                            }
+
+                            {
+                                dialogShareFolderToggle && currentFolderId &&
+
+                                    <DialogDisplayLayout
+                                        title="Share this folder"
+                                        handleClickOutside={dialogShareFolderToggle?.handleClickOutside}
+                                        closeDialog={dialogShareFolderToggle?.closeDialog}
+                                        dialogRef={dialogShareFolderToggle?.dialogRef}
+                                    >
+
+                                        <ShareFolderDialogDisplay folderId={currentFolderId} />
+
+                                    </DialogDisplayLayout>
+                            }
 
 
-                            <DialogDisplayLayout
-                                title="Add New File"
-                                handleClickOutside={dialogFileToggle.handleClickOutside}
-                                closeDialog={dialogFileToggle.closeDialog}
-                                dialogRef={dialogFileToggle.dialogRef}
-                            >
-                                <NewFileDisplay />
-
-                            </DialogDisplayLayout>
-
-
-                            <DialogDisplayLayout
-                                title="Share this folder"
-                                handleClickOutside={dialogShareFolderToggle.handleClickOutside}
-                                closeDialog={dialogShareFolderToggle.closeDialog}
-                                dialogRef={dialogShareFolderToggle.dialogRef}
-                            >
-
-                                <ShareFolderDialogDisplay folderId={currentFolderId} />
-
-                            </DialogDisplayLayout>
 
 
 
@@ -282,13 +343,14 @@ export function FolderPage() {
 
 
 
-                            <AddFoldersFilesButtons
+                            {asideBtnContainer}
+                            {/* <AddFoldersFilesButtons
                                 currentFolderId={currentFolderId}
                                 parentFolderId={parentFolderId}
                                 openFolderDialog={dialogFolderToggle.openDialog}
                                 openFileDialog={dialogFileToggle.openDialog}
                                 openShareFolderDialog={dialogShareFolderToggle.openDialog}
-                            />
+                            /> */}
 
 
                             <FolderSidebarDisplay
@@ -330,6 +392,6 @@ export function FolderPage() {
                     </div>
             }
 
-        </div>
+        </>
     );
 }

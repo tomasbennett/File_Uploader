@@ -1,9 +1,10 @@
 import React, { useRef } from "react";
+import { IUseDialogToggleReturn } from "../models/IUseDialogToggleReturn";
 
 // setDialogContentState: React.Dispatch<React.SetStateAction<IDialogContentStates | null>>
 
 
-export function useDialogToggle() {
+export function useDialogToggle(): IUseDialogToggleReturn {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     const openDialog = () => {

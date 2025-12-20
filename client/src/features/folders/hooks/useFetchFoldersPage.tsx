@@ -25,14 +25,14 @@ export function useFetchFoldersPage({
 
 
     const getFullPageData: (
-        folderId: string | undefined,
+        url: string,
         abortController: AbortController
-    ) => Promise<IFolderFileResponse | null> = async (folderId: string | undefined, abortController: AbortController) => {
-        if (!folderId) {
-            console.error("No folderId provided to fetch data!!!");
-            return null;
+    ) => Promise<IFolderFileResponse | null> = async (url: string, abortController: AbortController) => {
+        // if (!folderId) {
+        //     console.error("No folderId provided to fetch data!!!");
+        //     return null;
 
-        }
+        // }
 
 
 
@@ -102,7 +102,7 @@ export function useFetchFoldersPage({
             // }
 
             const response: Response | null = await errorHandler(
-                `${domain}/api/folders/${folderId}`,
+                url,
                 "GET",
                 navigate,
                 setIsError,

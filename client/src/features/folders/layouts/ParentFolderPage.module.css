@@ -1,4 +1,4 @@
-/* .folderPageContainer {
+.folderPageContainer {
     display: flex;
     flex-direction: column;
 
@@ -22,6 +22,7 @@
 .headerContainer > h1 {
     font-size: 2.4rem;
     font-weight: 600;
+    /* color: #333333; */
 }
 
 
@@ -36,6 +37,7 @@
     border-radius: .4rem;
     border: solid .1rem transparent;
 
+    /* padding: .7rem; */
     cursor: pointer;
 
     position: relative;
@@ -82,84 +84,4 @@
 
 
     width: 100%;
-} */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.mainContainer{
-    flex: 1 1 0;
-
-    display: flex;
-    flex-direction: row;
-
-
-
-    width: 100%;
-
-    background-color: rgb(255, 0, 234);
-
-    overflow: hidden;
-}
-
-.mainContainer > aside {
-    --inline-padding-sidebar: 1rem;
-
-
-    flex-shrink: 0;
-
-    width: 30rem;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-
-
-    padding: 1rem 1rem;
-
-    /* border-right: .1rem solid var(--soft-light-colour); */
-    /* border-right: .1rem solid var(--soft-light-colour); */
-
-    background-color: #222222;
-
-    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.7);
-
-}
-
-
-.mainContainer > main {
-    flex: 1 1 0;
-    height: 100%;
-
-
-    background-color: var(--dark-consistent-bg-header-colour);
-
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-
-    overflow: hidden;
-
-
-    padding: 1rem 1rem;
-
 }

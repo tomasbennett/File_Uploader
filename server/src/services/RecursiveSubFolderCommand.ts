@@ -3,12 +3,12 @@ import { prisma } from "../db/prisma";
 
 type IFolderIdsWithParent = {
     folderId: string,
-    parentFolderId: string | null
+    parentSharedNodeId: string
 }[];
 
 type IFileIdsWithParent = {
     fileId: string,
-    parentFolderId: string
+    parentSharedNodeId: string
 }[];
 
 
@@ -19,10 +19,10 @@ type FolderTreeIds = {
 
 export async function allSubfoldersRecursivelyCommand(
     rootFolderId: string,
-    parentFolderId: string | null
+    parentSharedNodeId: string
 ): Promise<FolderTreeIds | Error> {
 
-    const folderQueue: IFolderIdsWithParent = [{ folderId: rootFolderId, parentFolderId: parentFolderId }]
+    const folderQueue: IFolderIdsWithParent = [{ folderId: rootFolderId, parentSharedNodeId: parentSharedNodeId }]
     const folderIds: IFolderIdsWithParent = [];
     const fileIds: IFileIdsWithParent = [];
 
@@ -30,29 +30,29 @@ export async function allSubfoldersRecursivelyCommand(
         while (folderQueue.length > 0) {
             const currentFolderId = folderQueue.shift()!;
 
-            folderIds.push({ folderId: currentFolderId.folderId, parentFolderId: currentFolderId.parentFolderId });
+            folderIds.push({ folderId: currentFolderId.folderId, parentSharedNodeId: currentFolderId.parentSharedNodeId });
 
             const files = await prisma.files.findMany({
                 where: { parentFolderId: currentFolderId.folderId },
-                select: { id: true, parentFolderId: true }
+                select: { id: true }
             });
 
             for (const file of files) {
                 fileIds.push({
                     fileId: file.id,
-                    parentFolderId: file.parentFolderId
+                    parentSharedNodeId: currentFolderId.parentSharedNodeId
                 });
             }
 
             const subfolders = await prisma.folder.findMany({
                 where: { parentFolderId: currentFolderId.folderId },
-                select: { id: true, parentFolderId: true }
+                select: { id: true }
             });
 
             for (const subfolder of subfolders) {
                 folderQueue.push({
                     folderId: subfolder.id,
-                    parentFolderId: subfolder.parentFolderId
+                    parentSharedNodeId: currentFolderId.parentSharedNodeId
                 });
             }
         }
