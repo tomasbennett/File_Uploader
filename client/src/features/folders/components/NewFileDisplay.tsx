@@ -10,17 +10,19 @@ import { jsonParsingError } from "../constants";
 import { basicResponseHandle } from "../services/BasicResponseHandle";
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
+import { useDialogToggle } from "../hooks/useDialogToggle";
 
 type INewFileDisplayProps = {
     currentFolderId: string;
     setFiles: React.Dispatch<React.SetStateAction<IFileResponse[] | null>>;
-
+    closeDialog: ReturnType<typeof useDialogToggle>["closeDialog"];
 };
 
 
 export function NewFileDisplay({
     currentFolderId,
-    setFiles
+    setFiles,
+    closeDialog
 }: INewFileDisplayProps) {
 
 
@@ -84,6 +86,8 @@ export function NewFileDisplay({
                         return [...prevFiles, newFile];
                     }
                 });
+                
+                closeDialog();
 
                 console.log("File uploaded successfully:", newFile);
 
@@ -102,7 +106,7 @@ export function NewFileDisplay({
 
             setIsError(jsonParsingError);
             return;
-            
+
 
             
         } catch (error) {
