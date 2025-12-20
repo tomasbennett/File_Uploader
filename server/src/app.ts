@@ -13,6 +13,7 @@ import { router as signInRouter } from "./controllers/sign-in";
 import { router as authRouter } from "./controllers/auth";
 import { router as apiRouter } from "./controllers/api";
 import { router as publicFoldersRouter } from "./controllers/public";
+import { router as downloadRouter } from "./controllers/downloads";
 
 
 import "./passport/passportConfig";
@@ -72,22 +73,26 @@ app.use(passport.session());
 
 
 
-app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
-
-  if (req.headers.accept && req.headers.accept === "application/json") {
-    return next();
-
-  } else {
-    return res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
-
-  }
-
-});
 
 app.use("/sign-in", signInRouter);
 app.use("/auth", authRouter);
-app.use("/api", apiRouter);
-app.use("/api", publicFoldersRouter);
+app.use("/api", apiRouter, publicFoldersRouter);
+// app.use("/api", publicFoldersRouter);
+app.use("/download", downloadRouter);
+
+app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
+
+
+  // if (req.headers.accept && req.headers.accept === "application/json") {
+  //   return next();
+
+  // } else {
+  return res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+
+  // }
+
+});
+
 
 app.use((err: Error, req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) => {
   console.error(err.stack);

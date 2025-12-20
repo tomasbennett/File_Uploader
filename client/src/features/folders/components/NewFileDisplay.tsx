@@ -8,6 +8,12 @@ type INewFileDisplayProps = {
 export function NewFileDisplay({
 
 }: INewFileDisplayProps) {
+
+    
+
+
+
+
     return (
         <div className={styles.newFileDialogContainer}>
 

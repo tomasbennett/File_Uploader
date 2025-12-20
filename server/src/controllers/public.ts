@@ -201,38 +201,51 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
             }
         });
 
+
+        
         if (sharedLinkAlreadyExists) {
-
-            const sharedNode: SharedNode | undefined = sharedLinkAlreadyExists.sharedRelationships.find((sharedNode) => {
-
-                if (sharedNode.folderId === durationResult.data.folderId) {
-                    return true;
-
+            const sessionExpirationDate = sharedLinkAlreadyExists.expiresAt;
+    
+            if (isDateInPast(sessionExpirationDate)) {
+                const expiredSharedSession = await prisma.shared.delete({
+                    where: {
+                        id: sharedLinkAlreadyExists.id
+                    }
+                });
+    
+            } else {
+                const sharedNode: SharedNode | undefined = sharedLinkAlreadyExists.sharedRelationships.find((sharedNode) => {
+        
+                    if (sharedNode.folderId === durationResult.data.folderId) {
+                        return true;
+        
+                    }
+        
+                    return false;
+        
+                });
+        
+                if (!sharedNode) {
+                    const sharedLinkMissingError: ICustomErrorResponse = {
+                        message: "Shared link data is corrupted. Shared link should exist with a shared session but doesn't!!!  Please contact support.",
+                        ok: false,
+                        status: 500
+                    };
+        
+                    return res.status(500).json(sharedLinkMissingError);
                 }
-
-                return false;
-
-            });
-
-            if (!sharedNode) {
-                const sharedLinkMissingError: ICustomErrorResponse = {
-                    message: "Shared link data is corrupted. Shared link should exist with a shared session but doesn't!!!  Please contact support.",
+        
+        
+                const sharedLinkExistsError: ICustomErrorResponse = {
+                    message: `Folder is already shared publicly!!! Preexisting Generated Link: ${sharedNode.id}`,
                     ok: false,
-                    status: 500
+                    status: 400
                 };
+        
+                return res.status(400).json(sharedLinkExistsError);
 
-                return res.status(500).json(sharedLinkMissingError);
             }
-
-
-            const sharedLinkExistsError: ICustomErrorResponse = {
-                message: `Folder is already shared publicly!!! Preexisting Generated Link: ${sharedNode.id}`,
-                ok: false,
-                status: 400
-            };
-
-            return res.status(400).json(sharedLinkExistsError);
-
+            
         }
 
 
@@ -245,7 +258,6 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
             }
         });
 
-        // ! NOW WE NEED TO GET EACH FILE AND SUBFOLDER CHILD RECURSIVELY AND ADD THEM TO THE SHARENODE TABLE WITH THE NEW SHAREDSESSION ID !!!
 
         const folder = await prisma.folder.findUnique({
             where: {
@@ -290,58 +302,9 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
             rootSharedNode.id
         );
 
-        // return res.status(200).json(subFolderFileIds);
-
-
         if (subFolderFileIds instanceof Error) {
             return next(subFolderFileIds);
         }
-
-        // subFolderFileIds.folderIds.forEach(async (folderId) => {
-        //     await prisma.sharedNode.create({
-        //         data: {
-
-        //             sharedRelationshipId: newSharedSession.id,
-        //             folderId: folderId.folderId,
-        //             parentNodeId: folderId.parentSharedNodeId
-
-        //         }
-        //     });
-        // });
-
-        // subFolderFileIds.fileIds.forEach(async (fileId) => {
-        //     await prisma.sharedNode.create({
-        //         data: {
-
-        //             sharedRelationshipId: newSharedSession.id,
-        //             fileId: fileId.fileId,
-        //             parentNodeId: fileId.parentSharedNodeId
-
-        //         }
-        //     });
-        // })
-
-
-        // // const sessionParentNode = await prisma.sharedNode.findUnique({
-        // //     where: {
-        // //         sharedRelationshipId_folderId: {
-
-        // //             folderId: folder.id,
-        // //             sharedRelationshipId: newSharedSession.id
-
-        // //         }
-        // //     }
-        // // });
-
-        // // if (!sessionParentNode) {
-        // //     const parentNodeMissingError: ICustomErrorResponse = {
-        // //         message: "Shared session parent node is missing. Shared link data is corrupted. Please contact support.",
-        // //         ok: false,
-        // //         status: 500
-        // //     };
-
-        // //     return res.status(500).json(parentNodeMissingError);
-        // // }
 
 
         const generatedLinkResponse: IGeneratedLinkResponse = {
