@@ -398,4 +398,4 @@ router.delete("/folders/:folderId", ensureAuthentication, async (req: Request<{ 
 
 
 
-})
+});

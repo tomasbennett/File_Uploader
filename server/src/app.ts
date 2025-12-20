@@ -14,6 +14,7 @@ import { router as authRouter } from "./controllers/auth";
 import { router as apiRouter } from "./controllers/api";
 import { router as publicFoldersRouter } from "./controllers/public";
 import { router as downloadRouter } from "./controllers/downloads";
+import { router as uploadRouter } from "./controllers/upload";
 
 
 import "./passport/passportConfig";
@@ -76,7 +77,7 @@ app.use(passport.session());
 
 app.use("/sign-in", signInRouter);
 app.use("/auth", authRouter);
-app.use("/api", apiRouter, publicFoldersRouter);
+app.use("/api", apiRouter, publicFoldersRouter, uploadRouter);
 // app.use("/api", publicFoldersRouter);
 app.use("/download", downloadRouter);
 
