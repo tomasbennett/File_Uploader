@@ -40,12 +40,15 @@ type IFolderPageProps = {
     folderData: IFolderResponse[] | null;
     setFolderData: React.Dispatch<React.SetStateAction<IFolderResponse[] | null>>;
     fileData: IFileResponse[] | null;
+    setFileData: React.Dispatch<React.SetStateAction<IFileResponse[] | null>>;
 
     setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>;
 
     abortController: React.MutableRefObject<AbortController | null>;
 
     foldersUrl: string;
+
+    downloadUrl: string;
 }
 
 
@@ -66,12 +69,15 @@ export function FolderPage({
     folderData,
     setFolderData,
     fileData,
+    setFileData,
 
     setIsError,
 
     abortController,
 
-    foldersUrl
+    foldersUrl,
+
+    downloadUrl
 }: IFolderPageProps) {
 
     // const { folderId } = useParams<{ folderId: string }>();
@@ -307,7 +313,7 @@ export function FolderPage({
                             }
 
                             {
-                                dialogFileToggle &&
+                                dialogFileToggle && currentFolderId &&
 
                                     <DialogDisplayLayout
                                         title="Add New File"
@@ -315,7 +321,11 @@ export function FolderPage({
                                         closeDialog={dialogFileToggle?.closeDialog}
                                         dialogRef={dialogFileToggle?.dialogRef}
                                     >
-                                        <NewFileDisplay />
+                                        <NewFileDisplay
+                                            currentFolderId={currentFolderId}
+                                            setFiles={setFileData}
+                                            closeDialog={dialogFileToggle?.closeDialog}
+                                        />
 
                                     </DialogDisplayLayout>
                             }
@@ -389,7 +399,7 @@ export function FolderPage({
                                 dialogRef={dialogFileInfoToggle.dialogRef}
                                 postCloseAction={() => setFileInfoData(null)}
                             >
-                                <FileInfoDialogDisplay file={fileInfoData} />
+                                <FileInfoDialogDisplay downloadUrl={downloadUrl} file={fileInfoData} />
 
                             </DialogDisplayLayout>
 

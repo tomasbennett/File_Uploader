@@ -29,6 +29,7 @@ export function PrivateFolderPage() {
         setFolderData,
 
         fileData,
+        setFileData,
 
         setIsError,
 
@@ -59,6 +60,8 @@ export function PrivateFolderPage() {
 
     return (
         <FolderPage 
+            downloadUrl="/download/private"
+            setFileData={setFileData}
             foldersUrl="/folder/"
             dialogFileToggle={dialogFileToggle}
             dialogFolderToggle={dialogFolderToggle}

@@ -3,38 +3,29 @@ import { APISuccessSchema } from "./ISuccessResponse";
 import { FileResponseSchema } from "./IFolderFileResponse";
 
 
+export const maxFileSizeInBytes = 50 * 1024 * 1024; // 50 MB
+
+export const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+    "text/plain",
+    "application/zip",
+];
+
 export const NewFileRequestSchema = z.object({
     file: z.instanceof(FileList)
-        .refine((fileList) => fileList.length > 0, {
-            message: "At least one file must be uploaded.",
+        .refine((fileList) => fileList.length === 1, {
+            message: "Exactly one file must be uploaded.",
         })
-        .refine((fileList) => {
-            const maxFileSizeInBytes = 50 * 1024 * 1024; // 50 MB
-            for (let i = 0; i < fileList.length; i++) {
-                if (fileList[i].size > maxFileSizeInBytes) {
-                    return false;
-                }
-            }
-            return true;
+        .refine((fileList) => fileList[0].size <= maxFileSizeInBytes, {
+            message: `File size must be less than ${maxFileSizeInBytes / 1024 / 1024} MB`,
         })
-        .refine((fileList) => {
-            const allowedTypes = [
-                "image/jpeg",
-                "image/png",
-                "application/pdf",
-                "text/plain",
-                "application/zip",
-            ];
-            for (let i = 0; i < fileList.length; i++) {
-                if (!allowedTypes.includes(fileList[i].type)) {
-                    return false;
-                }
-            }
-            return true;
-        }, {
-            message: "One or more files have an unsupported file type.",
+        .refine((fileList) => allowedTypes.includes(fileList[0].type), {
+            message: "File type is not allowed.",
         }),
 });
+
 
 
 export type INewFileRequest = z.infer<typeof NewFileRequestSchema>;
@@ -54,8 +45,3 @@ export type INewFileRequestBackend = z.infer<typeof NewFileRequestBackendSchema>
 
 
 
-export const NewFileResponseSchema = APISuccessSchema.extend({
-    file: FileResponseSchema
-});
-
-export type INewFileResponse = z.infer<typeof NewFileResponseSchema>;

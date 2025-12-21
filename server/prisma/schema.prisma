@@ -52,6 +52,8 @@ model Files {
   parentFolder   Folder       @relation(fields: [parentFolderId], references: [id], onDelete: Cascade)
   SharedNode     SharedNode[]
 
+  supabaseFileId String @unique
+
 }
 
 model Shared {

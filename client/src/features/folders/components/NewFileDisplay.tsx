@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import styles from "./NewFileDisplay.module.css";
-import { INewFileRequest, INewFileRequestBackend, NewFileRequestSchema, NewFileResponseSchema } from "../../../../../shared/models/INewFileRequest";
+import { INewFileRequest, INewFileRequestBackend, NewFileRequestSchema } from "../../../../../shared/models/INewFileRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
@@ -11,6 +11,7 @@ import { basicResponseHandle } from "../services/BasicResponseHandle";
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
 import { useDialogToggle } from "../hooks/useDialogToggle";
+import { NewFileResponseSchema } from "../../../../../shared/models/INewFileResponse";
 
 type INewFileDisplayProps = {
     currentFolderId: string;

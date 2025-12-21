@@ -2,12 +2,13 @@ import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse"
 import styles from "./FileInfoDialogDisplay.module.css";
 
 type IFileInfoDialogDisplayProps = {
-    file: IFileResponse | null
+    file: IFileResponse | null,
+    downloadUrl: string
 };
 
 
 
-export function FileInfoDialogDisplay({ file }: IFileInfoDialogDisplayProps) {
+export function FileInfoDialogDisplay({ file, downloadUrl }: IFileInfoDialogDisplayProps) {
     if (!file) return null;
 
     const {
@@ -18,6 +19,18 @@ export function FileInfoDialogDisplay({ file }: IFileInfoDialogDisplayProps) {
         createdAt,
         parentFolderId
     } = file;
+
+
+    const onDeleteClick = () => {
+
+    };
+
+    const onShareClick = () => {
+
+    };
+
+
+
 
 
     return (
@@ -45,17 +58,17 @@ export function FileInfoDialogDisplay({ file }: IFileInfoDialogDisplayProps) {
 
             <div className={styles.btnContainer}>
 
-                <button className={`${styles.deleteBtn} ${styles.actionBtn}`} type="button">
+                <button onClick={onDeleteClick} className={`${styles.deleteBtn} ${styles.actionBtn}`} type="button">
                     Delete
                 </button>
 
-                <button className={`${styles.shareBtn} ${styles.actionBtn}`} type="button">
+                <button onClick={onShareClick} className={`${styles.shareBtn} ${styles.actionBtn}`} type="button">
                     Share
                 </button>
 
-                <button className={`${styles.downloadBtn} ${styles.actionBtn}`} type="button">
+                <a download={true} href={`${downloadUrl}/${file.id}`} className={`${styles.downloadBtn} ${styles.actionBtn}`}>
                     Download
-                </button>
+                </a>
 
             </div>
 

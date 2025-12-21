@@ -26,6 +26,7 @@ export function PublicFolderPage() {
         setFolderData,
 
         fileData,
+        setFileData,
 
         setIsError,
 
@@ -42,6 +43,8 @@ export function PublicFolderPage() {
 
     return (
         <FolderPage
+            downloadUrl="/download/public"
+            setFileData={setFileData}
             foldersUrl="/folder/public/"
             parentFolders={parentFolders}
             parentFolderId={parentFolderId}

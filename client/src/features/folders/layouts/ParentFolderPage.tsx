@@ -25,6 +25,7 @@ export type IParentFolderPageOutletContext = {
     setFolderData: React.Dispatch<React.SetStateAction<IFolderResponse[] | null>>;
 
     fileData: IFileResponse[] | null;
+    setFileData: React.Dispatch<React.SetStateAction<IFileResponse[] | null>>;
 
     setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>;
 
@@ -198,6 +199,7 @@ export function ParentFolderPage() {
         folderData,
         setFolderData,
         fileData,
+        setFileData,
         setIsError,
         abortController
     }
