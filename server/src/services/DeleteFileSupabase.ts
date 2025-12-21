@@ -23,7 +23,7 @@ export async function deleteSupaBaseFile(
     try {
 
 
-        const fileRecord = await prisma.files.findUnique({
+        const fileRecord = await prisma.files.delete({
             where: { id: fileId },
             select: { supabaseFileId: true }
         });
@@ -52,7 +52,7 @@ export async function deleteSupaBaseFile(
         return { ok: true };
 
     } catch (error) {
-        
+
         if (error instanceof Error) {
             return {
                 ok: false,

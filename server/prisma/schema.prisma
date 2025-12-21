@@ -49,7 +49,7 @@ model Files {
   uploadedAt DateTime @default(now())
 
   parentFolderId String       @db.Uuid
-  parentFolder   Folder       @relation(fields: [parentFolderId], references: [id], onDelete: Cascade)
+  parentFolder   Folder       @relation(fields: [parentFolderId], references: [id])
   SharedNode     SharedNode[]
 
   supabaseFileId String @unique
