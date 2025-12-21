@@ -10,6 +10,7 @@ import { INewFolderSubmittable, NewFolderSchema } from "../../../shared/models/I
 import { ICustomSuccessMessage } from "../../../shared/models/ISuccessResponse";
 import { getRootFolder } from "../services/RootFolder";
 import { IsUsersFolder } from "../services/IsUsersFolder";
+import { IDeletedFilesResponse } from "../../../shared/models/IDeletedFilesResponse";
 
 
 export const router = Router();
@@ -398,4 +399,100 @@ router.delete("/folders/:folderId", ensureAuthentication, async (req: Request<{ 
 
 
 
+});
+
+
+
+router.delete("/files/:fileId", ensureAuthentication, async (req: Request<{ fileId: string }>, res: Response<ICustomErrorResponse | IDeletedFilesResponse>, next: NextFunction) => {
+    const { fileId } = req.params;
+
+
+    try {
+        const fileToDelete = await prisma.files.findUnique({
+            where: {
+                id: fileId
+            }
+        });
+
+        if (!fileToDelete) {
+            const fileNotFoundError: ICustomErrorResponse = {
+                ok: false,
+                status: 404,
+                message: "File not found!!!"
+            }
+
+            return res.status(404).json(fileNotFoundError);
+        }
+
+        const isUsersFolder = await IsUsersFolder(fileToDelete.parentFolderId, req.user);
+
+        if (isUsersFolder instanceof Error) {
+            return next(isUsersFolder);
+        }
+
+        const errorResult = APIErrorSchema.safeParse(isUsersFolder);
+
+        if (errorResult.success) {
+            return res.status(errorResult.data.status).json(errorResult.data);
+        }
+
+        const deletedFile = await prisma.files.delete({
+            where: {
+                id: fileId
+            }
+        });
+
+        if (!deletedFile) {
+            const fileNotDeletedError: ICustomErrorResponse = {
+                ok: false,
+                status: 500,
+                message: "File could not be deleted due to server error!!!"
+            }
+
+            return res.status(500).json(fileNotDeletedError);
+        }
+
+        const updatedFolder = await prisma.folder.findUnique({
+            where: {
+                id: deletedFile.parentFolderId
+            },
+            include: {
+                files: true,
+            }
+        });
+
+        if (!updatedFolder) {
+            const folderNotFoundError: ICustomErrorResponse = {
+                ok: false,
+                status: 404,
+                message: "Parent folder not found after file deletion!!!"
+            }
+
+            return res.status(404).json(folderNotFoundError);
+        }
+
+
+
+
+        return res.status(204).json({
+            ok: true,
+            status: 204,
+            message: "File successfully deleted!!!",
+            file: updatedFolder.files.map((file) => ({
+                id: file.id,
+                name: file.filename,
+                parentFolderId: file.parentFolderId,
+                fileType: file.filetype,
+                size: file.filesize,
+                createdAt: file.uploadedAt,
+            }))
+        });
+
+
+    } catch (error) {
+
+        next(error);
+
+
+    }
 });

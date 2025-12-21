@@ -399,7 +399,7 @@ export function FolderPage({
                                 dialogRef={dialogFileInfoToggle.dialogRef}
                                 postCloseAction={() => setFileInfoData(null)}
                             >
-                                <FileInfoDialogDisplay downloadUrl={downloadUrl} file={fileInfoData} />
+                                <FileInfoDialogDisplay closeDialog={dialogFileInfoToggle.closeDialog} setFiles={setFileData} downloadUrl={downloadUrl} file={fileInfoData} />
 
                             </DialogDisplayLayout>
 

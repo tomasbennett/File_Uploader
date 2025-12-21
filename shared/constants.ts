@@ -54,3 +54,6 @@ export const allowedTypes = [
     "text/plain",
     "application/zip",
 ];
+
+
+export const backendUrl = "http://localhost:3000";

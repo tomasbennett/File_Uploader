@@ -141,12 +141,19 @@ export function NewFileDisplay({
 
             <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
 
+
+
+
                 <input
                     {...register("file")}
                     type="file"
                     name="file"
                     className={styles.fileNameInput}
                 />
+
+                
+
+
 
                 <button
                     type="submit"
