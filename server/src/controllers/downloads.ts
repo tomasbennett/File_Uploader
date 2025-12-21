@@ -33,7 +33,7 @@ router.get("/public/:sharedNodeFileId", ensureAuthentication, async (req: Reques
         });
     }
 
-    const file = await fetchSupaBaseFile(sharedNode.fileId!);
+    const file = await fetchSupaBaseFile(sharedNode.file!.supabaseFileId);
 
     const errorResult = APIErrorSchema.safeParse(file);
     if (errorResult.success) {

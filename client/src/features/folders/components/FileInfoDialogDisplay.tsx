@@ -115,7 +115,12 @@ export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog
         if (deleteError) {
             console.error("Delete File Error:", deleteError);
         }
+        
     }, [deleteError]);
+
+    useEffect(() => {
+        console.log(Boolean(asideBtnContainer));
+    }, [shareError]);
 
 
     return (
