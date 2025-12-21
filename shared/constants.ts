@@ -42,3 +42,15 @@ export type ISignInError = z.infer<typeof SignInErrorSchema>;
 
 
 export const rootFolderName: string = "root";
+
+
+
+export const maxFileSizeInBytes = 50 * 1024 * 1024; // 50 MB
+
+export const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+    "text/plain",
+    "application/zip",
+];

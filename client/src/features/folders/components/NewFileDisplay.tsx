@@ -53,7 +53,7 @@ export function NewFileDisplay({
       
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("parentFolderId", currentFolderId);
+        formData.append("currentFolderId", currentFolderId);
 
         try {
             setIsLoading(true);

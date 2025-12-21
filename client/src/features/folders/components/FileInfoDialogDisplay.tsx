@@ -66,7 +66,7 @@ export function FileInfoDialogDisplay({ file, downloadUrl }: IFileInfoDialogDisp
                     Share
                 </button>
 
-                <a download={true} href={`${downloadUrl}/${file.id}`} className={`${styles.downloadBtn} ${styles.actionBtn}`}>
+                <a target="_blank" rel="noopener noreferrer" href={`http://localhost:3000${downloadUrl}/${file.id}`} className={`${styles.downloadBtn} ${styles.actionBtn}`}>
                     Download
                 </a>
 

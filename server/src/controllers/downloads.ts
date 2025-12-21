@@ -75,28 +75,31 @@ router.get("/private/:fileId", ensureAuthentication, async (req: Request<{ fileI
         }
     });
 
-    if (!file) {
-        return res.status(404).json({
-            message: "File not found!!!",
-            ok: false,
-            status: 404
-        });
-    }
+    // if (!file) {
+    //     return res.status(404).json({
+    //         message: "File not found!!!",
+    //         ok: false,
+    //         status: 404
+    //     });
+    // }
+    if (!file) return res.status(404).send("File not found!");
 
     const isUsersFile = await IsUsersFolder(file.parentFolderId, req.user!);
 
     if (isUsersFile instanceof Error) {
-        return res.status(500).json({
-            message: isUsersFile.message,
-            ok: false,
-            status: 500
-        });
+        // return res.status(500).json({
+        //     message: isUsersFile.message,
+        //     ok: false,
+        //     status: 500
+        // });
+        return res.status(500).send(isUsersFile.message);
     }
 
     const errorResult = APIErrorSchema.safeParse(isUsersFile);
     if (errorResult.success) {
         const apiError = isUsersFile as ICustomErrorResponse;
-        return res.status(apiError.status).json(apiError);
+        // return res.status(apiError.status).json(apiError);
+        return res.status(apiError.status).send(apiError.message);
     }
 
 
@@ -104,8 +107,7 @@ router.get("/private/:fileId", ensureAuthentication, async (req: Request<{ fileI
 
     const errorResultFile = APIErrorSchema.safeParse(supabaseFile);
     if (errorResultFile.success) {
-        const apiError = supabaseFile as ICustomErrorResponse;
-        return res.status(apiError.status).json(apiError);
+        return res.status(404).send("File not found in storage!");
     }
 
 
@@ -114,10 +116,9 @@ router.get("/private/:fileId", ensureAuthentication, async (req: Request<{ fileI
     const arrayBuffer = await blobFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    res.setHeader("Content-Type", blobFile.type);
-    res.setHeader("Content-Length", blobFile.size.toString());
+    res.setHeader("Content-Type", blobFile.type || "application/octet-stream");
     res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
 
-    return res.send(buffer);
+    res.send(buffer);
 
 });

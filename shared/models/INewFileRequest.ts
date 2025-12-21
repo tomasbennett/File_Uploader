@@ -1,17 +1,10 @@
 import z from "zod";
 import { APISuccessSchema } from "./ISuccessResponse";
 import { FileResponseSchema } from "./IFolderFileResponse";
+import { allowedTypes, maxFileSizeInBytes } from "../constants";
 
 
-export const maxFileSizeInBytes = 50 * 1024 * 1024; // 50 MB
 
-export const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "application/pdf",
-    "text/plain",
-    "application/zip",
-];
 
 export const NewFileRequestSchema = z.object({
     file: z.instanceof(FileList)
