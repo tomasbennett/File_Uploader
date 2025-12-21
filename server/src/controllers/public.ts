@@ -14,7 +14,7 @@ import { recursiveSharedNodeParent } from "../services/RecursiveSharedNodeParent
 export const router = Router();
 
 
-router.get("/public/:sharedNodeId", async (req: Request<{ sharedNodeId: string }>, res: Response<ICustomErrorResponse | IFolderFileResponse>, next: NextFunction) => {
+router.get("/public/:sharedNodeId", ensureAuthentication, async (req: Request<{ sharedNodeId: string }>, res: Response<ICustomErrorResponse | IFolderFileResponse>, next: NextFunction) => {
     const { sharedNodeId } = req.params;
 
     try {
@@ -173,9 +173,6 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
 
         return res.status(400).json(notCorrectFormat);
     }
-
-    // ! CHECK IF FOLDER BELONGS TO USER !!!
-    // ! CHECK IF SHARED LINK ALREADY EXISTS !!!
 
     const isUsersFolder = await IsUsersFolder(durationResult.data.folderId, req.user);
 

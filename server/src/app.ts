@@ -78,19 +78,12 @@ app.use(passport.session());
 app.use("/sign-in", signInRouter);
 app.use("/auth", authRouter);
 app.use("/api", apiRouter, publicFoldersRouter, uploadRouter);
-// app.use("/api", publicFoldersRouter);
 app.use("/download", downloadRouter);
 
 app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
 
-
-  // if (req.headers.accept && req.headers.accept === "application/json") {
-  //   return next();
-
-  // } else {
   return res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
 
-  // }
 
 });
 

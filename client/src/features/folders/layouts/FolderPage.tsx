@@ -49,6 +49,7 @@ type IFolderPageProps = {
     foldersUrl: string;
 
     downloadUrl: string;
+    openInNewTabUrl: string;
 }
 
 
@@ -77,7 +78,8 @@ export function FolderPage({
 
     foldersUrl,
 
-    downloadUrl
+    downloadUrl,
+    openInNewTabUrl
 }: IFolderPageProps) {
 
     // const { folderId } = useParams<{ folderId: string }>();
@@ -399,7 +401,7 @@ export function FolderPage({
                                 dialogRef={dialogFileInfoToggle.dialogRef}
                                 postCloseAction={() => setFileInfoData(null)}
                             >
-                                <FileInfoDialogDisplay asideBtnContainer={asideBtnContainer} closeDialog={dialogFileInfoToggle.closeDialog} setFiles={setFileData} downloadUrl={downloadUrl} file={fileInfoData} />
+                                <FileInfoDialogDisplay openInNewTabUrl={openInNewTabUrl} asideBtnContainer={asideBtnContainer} closeDialog={dialogFileInfoToggle.closeDialog} setFiles={setFileData} downloadUrl={downloadUrl} file={fileInfoData} />
 
                             </DialogDisplayLayout>
 

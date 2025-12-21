@@ -18,21 +18,19 @@ type IFileInfoDialogDisplayProps = {
     closeDialog: ReturnType<typeof useDialogToggle>["closeDialog"];
 
     asideBtnContainer?: React.ReactNode;
+    openInNewTabUrl: string;
 };
 
 
 
-export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog, asideBtnContainer }: IFileInfoDialogDisplayProps) {
+export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog, asideBtnContainer, openInNewTabUrl }: IFileInfoDialogDisplayProps) {
     if (!file) return null;
 
     const navigate = useNavigate();
 
 
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [isSharing, setIsSharing] = useState<boolean>(false);
-
     const [deleteError, setDeleteError] = useState<ICustomErrorResponse | null>(null);
-    const [shareError, setShareError] = useState<ICustomErrorResponse | null>(null);
 
 
 
@@ -106,21 +104,15 @@ export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog
 
     };
 
-    const onShareClick = () => {
-
-    };
 
 
     useEffect(() => {
         if (deleteError) {
             console.error("Delete File Error:", deleteError);
         }
-        
+
     }, [deleteError]);
 
-    useEffect(() => {
-        console.log(Boolean(asideBtnContainer));
-    }, [shareError]);
 
 
     return (
@@ -160,18 +152,15 @@ export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog
 
                         </button>
 
-                        <button onClick={onShareClick} className={`${styles.shareBtn} ${styles.actionBtn}`} type="button">
-                            {
-                                isSharing ?
-                                    <LoadingCircle width="2.5rem" />
-                                    :
-                                    "Share"
-                            }
-                        </button>
 
                     </>
 
                 }
+                <a href={`${backendUrl}${openInNewTabUrl}/${file.id}`} target="_blank" rel="noopener noreferrer" className={`${styles.shareBtn} ${styles.actionBtn}`}>
+                    {
+                        "Open"
+                    }
+                </a>
 
 
                 <a target="_blank" rel="noopener noreferrer" href={`${backendUrl}${downloadUrl}/${file.id}`} className={`${styles.downloadBtn} ${styles.actionBtn}`}>

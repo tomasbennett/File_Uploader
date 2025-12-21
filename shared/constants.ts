@@ -51,8 +51,7 @@ export const allowedTypes = [
     "image/jpeg",
     "image/png",
     "application/pdf",
-    "text/plain",
-    "application/zip",
+    "text/plain"
 ];
 
 

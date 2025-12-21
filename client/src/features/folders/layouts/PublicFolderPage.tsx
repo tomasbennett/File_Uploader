@@ -43,6 +43,7 @@ export function PublicFolderPage() {
 
     return (
         <FolderPage
+            openInNewTabUrl="/api/public/inline-file"
             downloadUrl="/download/public"
             setFileData={setFileData}
             foldersUrl="/folder/public/"

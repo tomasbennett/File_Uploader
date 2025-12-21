@@ -13,6 +13,7 @@ import { IsUsersFolder } from "../services/IsUsersFolder";
 import { IDeletedFilesResponse } from "../../../shared/models/IDeletedFilesResponse";
 import { deleteSupaBaseFile } from "../services/DeleteFileSupabase";
 import { deleteAllFileIdsInFolder } from "../services/AllFileIdsInFolder";
+import { fetchSupaBaseFile } from "../services/FetchSupaBaseFile";
 
 
 export const router = Router();
@@ -493,5 +494,114 @@ router.delete("/files/:fileId", ensureAuthentication, async (req: Request<{ file
         next(error);
 
 
+    }
+});
+
+
+
+
+router.get("/private/inline-file/:fileId", ensureAuthentication, async (req: Request<{ fileId: string }>, res: Response, next: NextFunction) => {
+    try {
+        const { fileId } = req.params;
+    
+        const file = await prisma.files.findUnique({
+            where: {
+                id: fileId,
+            },
+            include: {
+                parentFolder: {
+                    include: {
+                        owner: true
+                    }
+                }
+            }
+        });
+    
+        if (!file) return res.status(404).send("File not found!");
+    
+    
+        const isUsersFile = await IsUsersFolder(file.parentFolderId, req.user!);
+    
+        if (isUsersFile instanceof Error) {
+            return res.status(500).send(isUsersFile.message);
+        }
+    
+        const errorResult = APIErrorSchema.safeParse(isUsersFile);
+        if (errorResult.success) {
+            const apiError = isUsersFile as ICustomErrorResponse;
+            return res.status(apiError.status).send(apiError.message);
+        }
+    
+        const supabaseFile = await fetchSupaBaseFile(file.supabaseFileId);
+    
+        const errorResultFile = APIErrorSchema.safeParse(supabaseFile);
+        if (errorResultFile.success) {
+            return res.status(404).send("File not found in storage: " + errorResultFile.data.message);
+        }
+    
+        const arrayBuffer = await (supabaseFile as Blob).arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+    
+    
+        const fileBuffer = buffer;
+        res.setHeader("Content-Type", (supabaseFile as Blob).type);
+        res.setHeader("Content-Length", buffer.length.toString());
+        res.setHeader("Content-Disposition", `inline; filename="${file.filename}"`);
+        res.send(fileBuffer);
+        
+    } catch (error) {
+        next(error);
+        
+    }
+    
+});
+
+
+router.get("/public/inline-file/:shareNodeId", ensureAuthentication, async (req: Request<{ shareNodeId: string }>, res: Response, next: NextFunction) => {
+    try {
+        const { shareNodeId } = req.params;
+    
+        const sharedNode = await prisma.sharedNode.findUnique({
+            where: {
+                id: shareNodeId,
+                fileId: {
+                    not: null
+                }
+            },
+            include: {
+                file: true,
+            }
+        });
+    
+
+        if (!sharedNode) {
+            return res.status(404).send("Shared node not found!!!");
+        }
+    
+
+        const file = sharedNode.file;
+    
+        const supabaseFile = await fetchSupaBaseFile(file!.supabaseFileId);
+    
+
+        const errorResultFile = APIErrorSchema.safeParse(supabaseFile);
+        if (errorResultFile.success) {
+            return res.status(404).send("File not found in storage: " + errorResultFile.data.message);
+        }
+        
+    
+        const arrayBuffer = await (supabaseFile as Blob).arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+    
+    
+        const fileBuffer = buffer;
+        res.setHeader("Content-Type", (supabaseFile as Blob).type);
+        res.setHeader("Content-Length", buffer.length.toString());
+        res.setHeader("Content-Disposition", `inline; filename="${file!.filename}"`);
+        res.send(fileBuffer);
+        
+    } catch (error) {
+        next(error);
+        
     }
 });

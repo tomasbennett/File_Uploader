@@ -60,6 +60,7 @@ export function PrivateFolderPage() {
 
     return (
         <FolderPage 
+            openInNewTabUrl="/api/private/inline-file"
             downloadUrl="/download/private"
             setFileData={setFileData}
             foldersUrl="/folder/"
