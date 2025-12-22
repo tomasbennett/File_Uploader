@@ -2,12 +2,15 @@ import { NavigateFunction } from "react-router-dom";
 import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { jsonParsingError } from "../constants";
 import { ISignInError } from "../../../../../shared/constants";
+import { FieldValues, UseFormSetError } from "react-hook-form";
+import { set } from "zod";
 
-export async function basicResponseHandle(
+export async function basicResponseHandle<T extends FieldValues>(
     url: string,
     fetchOptions: RequestInit,
     navigate: NavigateFunction,
-    setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>
+    setIsError: React.Dispatch<React.SetStateAction<ICustomErrorResponse | null>>,
+    setFormError?: UseFormSetError<T>
 ): Promise<Response | null> {
     try {
         const response = await fetch(url, fetchOptions);
@@ -32,6 +35,10 @@ export async function basicResponseHandle(
             } catch (err) {
                 console.error("Error parsing server error response:", err);
                 setIsError(jsonParsingError);
+                setFormError?.("root", {
+                    message: jsonParsingError.message,
+                    type: "server"
+                });
                 return null;
 
             }
@@ -101,6 +108,10 @@ export async function basicResponseHandle(
             message: error.message
         };
         setIsError(customError);
+        setFormError?.("root", {
+            message: error.message,
+            type: "server"
+        });
         return null;
 
     }

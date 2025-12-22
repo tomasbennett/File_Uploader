@@ -10,6 +10,7 @@ import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/mode
 import { jsonParsingError, notExpectedFormatError } from "../constants";
 import { LoadingCircle } from "../../../components/LoadingCircle";
 import { FolderResponseSchema, IFolderResponse } from "../../../../../shared/models/IFolderFileResponse";
+import { basicResponseHandle } from "../services/BasicResponseHandle";
 
 
 type IFolderDialogDisplayProps = {
@@ -61,17 +62,19 @@ export function FolderDialogDisplay({
 
 
 
-    const abortController = useRef<AbortController | null>(null);
+
+    // const abortController = useRef<AbortController | null>(null);
 
     const onSubmit: SubmitHandler<INewFolderForm> = async (data) => {
         const url: string = `${domain}/api/folders`
-
+        
+        clearErrors();
         setIsLoading(true);
 
 
         try {
-            abortController.current?.abort();
-            abortController.current = new AbortController();
+            // abortController.current?.abort();
+            // abortController.current = new AbortController();
 
 
             const submitData: INewFolderSubmittable = {
@@ -81,13 +84,29 @@ export function FolderDialogDisplay({
 
             console.dir(submitData)
 
-            const response: Response | null = await errorHandler(
+            // const response: Response | null = await errorHandler(
+            //     url,
+            //     "POST",
+            //     navigate,
+            //     setIsError,
+            //     abortController.current,
+            //     submitData
+            // );
+
+            const response = await basicResponseHandle<INewFolderSubmittable>(
                 url,
-                "POST",
+                {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(submitData)
+                },
                 navigate,
                 setIsError,
-                abortController.current,
-                submitData
+                setError
             );
 
             if (response === null) {
@@ -109,7 +128,6 @@ export function FolderDialogDisplay({
 
 
                 closeDialog();
-                clearErrors();
                 reset();
 
 
@@ -166,6 +184,11 @@ export function FolderDialogDisplay({
                     {
                         errors.folderName &&
                             <p className={styles.errorMessage}>{errors.folderName.message}</p>
+                    }
+
+{
+                        errors.root &&
+                            <p className={styles.errorMessage}>{errors.root.message}</p>
                     }
                     
                 </div>

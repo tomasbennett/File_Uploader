@@ -10,6 +10,7 @@ import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/mode
 import { jsonParsingError, notExpectedFormatError } from "../constants";
 import { GeneratedLinkResponseSchema } from "../../../../../shared/models/IGeneratedLinkResponse";
 import { LoadingCircle } from "../../../components/LoadingCircle";
+import { basicResponseHandle } from "../services/BasicResponseHandle";
 
 
 type IShareFolderDialogDisplayProps = {
@@ -26,7 +27,9 @@ export function ShareFolderDialogDisplay({
         register,
         handleSubmit,
         formState: { errors },
-        setError
+        setError,
+        reset,
+        clearErrors
     } = useForm({
         resolver: zodResolver(ShareDurationSchema)
     });
@@ -41,11 +44,13 @@ export function ShareFolderDialogDisplay({
         console.log("Selected duration (in seconds):", data.duration);
 
         setIsLoading(true);
+        clearErrors();
 
         if (folderId === null) {
-            setError("duration", { message: "Folder ID is null. Cannot generate link." });
+            setError("duration", { message: "Folder ID is null. Cannot generate link.", type: "manual" });
             return;
         }
+
 
         const durationObj: ISharedFolderTimeResponse = {
             duration: data.duration,
@@ -53,14 +58,31 @@ export function ShareFolderDialogDisplay({
         }
 
         try {
-            const response: Response | null = await errorHandler(
+            const response = await basicResponseHandle<IShareDuration>(
                 `${domain}/api/public`,
-                "POST",
+                {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(durationObj)
+                },
                 navigation,
                 setApiError,
-                new AbortController(),
-                durationObj
-            )
+                setError
+            );
+
+
+            // const response: Response | null = await errorHandler(
+            //     `${domain}/api/public`,
+            //     "POST",
+            //     navigation,
+            //     setApiError,
+            //     new AbortController(),
+            //     durationObj
+            // )
 
             if (response === null) {
                 return;
@@ -73,22 +95,27 @@ export function ShareFolderDialogDisplay({
             if (apiResponseResult.success) {
                 console.log("Generated Link Response:", apiResponseResult.data);
                 console.dir(apiResponseResult.data);
+                reset();
+
                 return;
             }
 
             const apiErrorResult = APIErrorSchema.safeParse(responseData);
             if (apiErrorResult.success) {
                 setApiError(apiErrorResult.data);
+                setError("root", { message: apiErrorResult.data.message, type: "server" });
                 return;
             }
 
             setApiError(notExpectedFormatError);
+            setError("root", { message: notExpectedFormatError.message, type: "server" });
             return;
 
 
         } catch (error) {
             console.error("Error parsing response JSON:", error);
             setApiError(jsonParsingError);
+            setError("root", { message: jsonParsingError.message, type: "server" });
             return;
 
         } finally {
@@ -142,6 +169,13 @@ export function ShareFolderDialogDisplay({
                     errors.duration &&
                     <p className={styles.errorMessage}>
                         {errors.duration.message}
+                    </p>
+                }
+
+                {
+                    errors.root &&
+                    <p className={styles.errorMessage}>
+                        {errors.root.message}
                     </p>
                 }
 

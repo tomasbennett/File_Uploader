@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { LoadingCircle } from "../../../components/LoadingCircle";
 import { IFileResponse } from "../../../../../shared/models/IFolderFileResponse";
-import { jsonParsingError } from "../constants";
+import { jsonParsingError, notExpectedFormatError } from "../constants";
 import { basicResponseHandle } from "../services/BasicResponseHandle";
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
@@ -37,12 +37,14 @@ export function NewFileDisplay({
         register,
         handleSubmit,
         formState: { errors },
-        setError
+        setError,
+        reset,
+        clearErrors
     } = useForm<INewFileRequest>(
         {
             resolver: zodResolver(NewFileRequestSchema),
             mode: "onSubmit",
-            reValidateMode: "onSubmit",
+            reValidateMode: "onChange",
         }
     )
 
@@ -50,15 +52,16 @@ export function NewFileDisplay({
     const onSubmit = async (data: INewFileRequest) => {
         const file = data.file?.[0];
         if (!file) return;
-      
+        
         const formData = new FormData();
         formData.append("file", file);
         formData.append("currentFolderId", currentFolderId);
-
+        
+        clearErrors();
         try {
             setIsLoading(true);
 
-            const response = await basicResponseHandle(
+            const response = await basicResponseHandle<INewFileRequest>(
                 `${domain}/api/files/upload`,
                 {
                     method: "POST",
@@ -67,10 +70,12 @@ export function NewFileDisplay({
 
                 },
                 navigate,
-                setIsError
+                setIsError,
+                setError
             );
 
             if (response === null) {
+
                 return;
             }
 
@@ -87,7 +92,8 @@ export function NewFileDisplay({
                         return [...prevFiles, newFile];
                     }
                 });
-                
+
+                reset();
                 closeDialog();
 
                 console.log("File uploaded successfully:", newFile);
@@ -102,25 +108,28 @@ export function NewFileDisplay({
                 console.dir(errorResult.data);
 
                 setIsError(errorResult.data);
+                setError("root", { message: errorResult.data.message, type: "server" });
                 return;
             }
 
-            setIsError(jsonParsingError);
+            setIsError(notExpectedFormatError);
+            setError("root", { message: notExpectedFormatError.message, type: "server" });
             return;
 
 
-            
+
         } catch (error) {
             console.error("Error uploading file:", error);
             setIsError(jsonParsingError);
-            
+            setError("root", { message: jsonParsingError.message, type: "server" });
+
         } finally {
             setIsLoading(false);
 
         }
 
 
-        
+
     }
 
 
@@ -128,12 +137,12 @@ export function NewFileDisplay({
 
 
 
-    useEffect(() => {
-        if (isError) {
-            console.log("Error in NewFileDisplay:");
-            console.dir(isError);
-        }
-    }, [isError]);
+    // useEffect(() => {
+    //     if (isError) {
+    //         console.log("Error in NewFileDisplay:");
+    //         console.dir(isError);
+    //     }
+    // }, [isError]);
 
 
     return (
@@ -151,7 +160,19 @@ export function NewFileDisplay({
                     className={styles.fileNameInput}
                 />
 
-                
+                {
+                    errors.root &&
+                    <p className={styles.errorMessage}>
+                        {errors.root.message}
+                    </p>
+                }
+
+                {
+                    errors.file &&
+                    <p className={styles.errorMessage}>
+                        {errors.file.message}
+                    </p>
+                }
 
 
 

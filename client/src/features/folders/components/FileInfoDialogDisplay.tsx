@@ -10,6 +10,7 @@ import { jsonParsingError, notExpectedFormatError } from "../constants";
 import { DeleteFileReponseSchema } from "../../../../../shared/models/IDeletedFilesResponse";
 import { useDialogToggle } from "../hooks/useDialogToggle";
 import { LoadingCircle } from "../../../components/LoadingCircle";
+import { formatFileSize } from "../services/FormatBytes";
 
 type IFileInfoDialogDisplayProps = {
     file: IFileResponse | null,
@@ -106,12 +107,12 @@ export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog
 
 
 
-    useEffect(() => {
-        if (deleteError) {
-            console.error("Delete File Error:", deleteError);
-        }
+    // useEffect(() => {
+    //     if (deleteError) {
+    //         console.error("Delete File Error:", deleteError);
+    //     }
 
-    }, [deleteError]);
+    // }, [deleteError]);
 
 
 
@@ -125,7 +126,7 @@ export function FileInfoDialogDisplay({ file, downloadUrl, setFiles, closeDialog
 
             <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>File Size:</span>
-                <span className={styles.infoValue}>{fileSize}</span>
+                <span className={styles.infoValue}>{formatFileSize(fileSize)}</span>
             </div>
 
             <div className={styles.infoRow}>

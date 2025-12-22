@@ -10,6 +10,8 @@ import { errorHandler } from "../services/ErrorHandler";
 import { domain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
 import { jsonParsingError, notExpectedFormatError } from "../constants";
+import { DialogDisplayLayout } from "../layouts/DialogDisplay";
+import { useDialogToggle } from "../hooks/useDialogToggle";
 
 
 type IAddFoldersFilesButtonsProps = {
@@ -31,13 +33,14 @@ export function AddFoldersFilesButtons({
 }: IAddFoldersFilesButtonsProps) {
     const navigate = useNavigate();
 
+    const deleteErrorDialog = useDialogToggle();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<ICustomErrorResponse | null>(null);
-
-
+    
+    
     const abortController = useRef<AbortController | null>(null)
-
+    
     const onDelete = async () => {
         try {
             if (currentFolderId === null || parentFolderId === null) {
@@ -46,6 +49,10 @@ export function AddFoldersFilesButtons({
                     status: 0,
                     message: "Can not delete root folder!!!"
                 });
+
+                deleteErrorDialog.openDialog();
+
+
                 return;
             }
 
@@ -64,6 +71,7 @@ export function AddFoldersFilesButtons({
             );
 
             if (response === null) {
+                deleteErrorDialog.openDialog();
                 return;
             }
 
@@ -74,8 +82,11 @@ export function AddFoldersFilesButtons({
 
             const jsonData = await response.json();
 
+            deleteErrorDialog.openDialog();
+
             const errorResult = APIErrorSchema.safeParse(jsonData);
             if (errorResult.success) {
+
                 setIsError(errorResult.data);
                 return;
 
@@ -86,6 +97,7 @@ export function AddFoldersFilesButtons({
 
         } catch (error) {
             setIsError(jsonParsingError);
+            deleteErrorDialog.openDialog();
 
 
             
@@ -101,6 +113,8 @@ export function AddFoldersFilesButtons({
     useEffect(() => {
         console.log(isError);
     }, [isError]);
+
+
 
     return (
         <div className={styles.buttonsContainer}>
@@ -130,7 +144,10 @@ export function AddFoldersFilesButtons({
             <button 
                 onClick={(e) => {
                     e.preventDefault();
-                    onDelete();
+                    if (!isLoading) {
+                        onDelete();
+
+                    }
 
 
                 }} 
@@ -145,6 +162,22 @@ export function AddFoldersFilesButtons({
                 }
 
             </button>
+            <DialogDisplayLayout
+                dialogRef={deleteErrorDialog.dialogRef}
+                closeDialog={deleteErrorDialog.closeDialog}
+                handleClickOutside={deleteErrorDialog.handleClickOutside}
+                title="Error Deleting Folder"
+            >
+                {
+                    isError && 
+                        <p className={styles.errorMessage}>
+                            {isError.message}
+                        </p>
+
+                }
+
+            </DialogDisplayLayout>
+
             <button
                 onClick={(e) => {
                     e.preventDefault();

@@ -71,3 +71,13 @@
     fill: white;
 }
 
+
+.errorMessage{
+    color: red;
+
+    text-align: center;
+
+    /* font-size: large; */
+
+    margin-top: 1rem;
+}
