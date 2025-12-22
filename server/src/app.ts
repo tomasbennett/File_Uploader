@@ -88,6 +88,7 @@ app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
 });
 
 
+
 app.use((err: Error, req: Request, res: Response<ICustomErrorResponse>, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({

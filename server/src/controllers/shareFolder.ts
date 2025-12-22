@@ -7,7 +7,7 @@ import { prisma } from "../db/prisma";
 import { SharedNode } from "@prisma/client";
 import { dateFromNow, isDateInPast } from "../services/DateFromNow";
 import { recursiveSubFolderCommand } from "../services/RecursiveSubFolderCommand";
-import { IGeneratedLinkResponse } from "../../../shared/models/IGeneratedLinkResponse";
+import { IGeneratedLinkResponse, IReturnPreexistingLink } from "../../../shared/models/IGeneratedLinkResponse";
 import { IFileResponse, IFolderFileResponse, IFolderResponse } from "../../../shared/models/IFolderFileResponse";
 import { recursiveSharedNodeParent } from "../services/RecursiveSharedNodeParent";
 
@@ -161,7 +161,7 @@ router.get("/public/:sharedNodeId", ensureAuthentication, async (req: Request<{ 
 
 
 
-router.post("/public", ensureAuthentication, async (req: Request<{}, {}, ISharedFolderTimeResponse>, res: Response<ICustomErrorResponse | IGeneratedLinkResponse | any>, next: NextFunction) => {
+router.post("/public", ensureAuthentication, async (req: Request<{}, {}, ISharedFolderTimeResponse>, res: Response<ICustomErrorResponse | IGeneratedLinkResponse | IReturnPreexistingLink>, next: NextFunction) => {
 
     const durationResult = SharedFolderTimeResponseSchema.safeParse(req.body);
     if (!durationResult.success) {
@@ -233,13 +233,14 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
                 }
         
         
-                const sharedLinkExistsError: ICustomErrorResponse = {
-                    message: `Folder is already shared publicly!!! Preexisting Generated Link: ${sharedNode.id}`,
+                const sharedLinkExistsError: IReturnPreexistingLink = {
+                    message: `Folder is already shared publicly!!!`,
                     ok: false,
-                    status: 400
+                    status: 400,
+                    link: sharedNode.id
                 };
         
-                return res.status(400).json(sharedLinkExistsError);
+                return res.status(sharedLinkExistsError.status).json(sharedLinkExistsError);
 
             }
             
