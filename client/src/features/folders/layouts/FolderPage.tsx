@@ -50,6 +50,9 @@ type IFolderPageProps = {
 
     downloadUrl: string;
     openInNewTabUrl: string;
+
+    setGeneratedLink?: React.Dispatch<React.SetStateAction<{ link: string; header: string } | null>>;
+    generatedLink?: { link: string; header: string } | null;
 }
 
 
@@ -79,7 +82,10 @@ export function FolderPage({
     foldersUrl,
 
     downloadUrl,
-    openInNewTabUrl
+    openInNewTabUrl,
+
+    setGeneratedLink,
+    generatedLink
 }: IFolderPageProps) {
 
     // const { folderId } = useParams<{ folderId: string }>();
@@ -333,16 +339,22 @@ export function FolderPage({
                             }
 
                             {
-                                dialogShareFolderToggle && currentFolderId &&
+                                dialogShareFolderToggle && currentFolderId && generatedLink !== undefined && setGeneratedLink &&
 
                                     <DialogDisplayLayout
                                         title="Share this folder"
-                                        handleClickOutside={dialogShareFolderToggle?.handleClickOutside}
-                                        closeDialog={dialogShareFolderToggle?.closeDialog}
+                                        handleClickOutside={(e) => {
+                                            dialogShareFolderToggle?.handleClickOutside(e, () => { setGeneratedLink?.(null); });
+                                            
+                                        }}
+                                        closeDialog={(e) => {
+                                            dialogShareFolderToggle?.closeDialog(() => { setGeneratedLink?.(null); });
+                                            
+                                        }}
                                         dialogRef={dialogShareFolderToggle?.dialogRef}
                                     >
 
-                                        <ShareFolderDialogDisplay folderId={currentFolderId} />
+                                        <ShareFolderDialogDisplay setGeneratedLink={setGeneratedLink} generatedLink={generatedLink} folderId={currentFolderId} />
 
                                     </DialogDisplayLayout>
                             }

@@ -17,11 +17,15 @@ import { GeneratedLinkBox } from "./GeneratedLinkBox";
 
 type IShareFolderDialogDisplayProps = {
     folderId: string | null;
+    generatedLink: { link: string; header: string } | null;
+    setGeneratedLink: React.Dispatch<React.SetStateAction<{ link: string; header: string } | null>>;
 };
 
 
 export function ShareFolderDialogDisplay({
-    folderId
+    folderId,
+    setGeneratedLink,
+    generatedLink
 }: IShareFolderDialogDisplayProps) {
 
 
@@ -39,7 +43,7 @@ export function ShareFolderDialogDisplay({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [apiError, setApiError] = useState<ICustomErrorResponse | null>(null);
-    const [generatedLink, setGeneratedLink] = useState<{ link: string, header: string } | null>(null);
+    
 
 
     const navigation = useNavigate();

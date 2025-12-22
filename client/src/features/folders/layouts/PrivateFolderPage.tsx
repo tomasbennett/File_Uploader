@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDialogToggle } from "../hooks/useDialogToggle";
 import { FolderPage } from "./FolderPage";
 import styles from "./PrivateFolderPage.module.css";
@@ -48,7 +48,7 @@ export function PrivateFolderPage() {
     const dialogFileToggle = useDialogToggle();
     const dialogShareFolderToggle = useDialogToggle();
 
-
+    const [generatedLink, setGeneratedLink] = useState<{ link: string, header: string } | null>(null);
 
 
     const currentFolderId = useMemo<string | null>(() => {
@@ -60,6 +60,8 @@ export function PrivateFolderPage() {
 
     return (
         <FolderPage 
+            setGeneratedLink={setGeneratedLink}
+            generatedLink={generatedLink}
             openInNewTabUrl="/api/private/inline-file"
             downloadUrl="/download/private"
             setFileData={setFileData}
