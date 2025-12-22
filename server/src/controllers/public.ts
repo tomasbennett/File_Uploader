@@ -236,7 +236,7 @@ router.post("/public", ensureAuthentication, async (req: Request<{}, {}, IShared
                 const sharedLinkExistsError: IReturnPreexistingLink = {
                     message: `Folder is already shared publicly!!!`,
                     ok: false,
-                    status: 400,
+                    status: 409,
                     link: sharedNode.id
                 };
         

@@ -1,0 +1,106 @@
+.generatedLinkContainer{
+    --border-radius: .5rem;
+    --background-colour: rgb(7, 7, 7);
+
+
+
+    width: 100%;
+    /* height: 100%; */
+
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 1rem 1rem;
+
+    border: .1rem solid white;
+
+
+    background-color: var(--background-colour);
+
+    border-radius: var(--border-radius);
+
+    overflow: hidden;
+}
+
+
+.headerContainer{
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 3rem;
+}
+
+
+.label{
+    font-size: 1.4rem;
+    font-weight: 700;
+
+    color: white;
+}
+
+
+.copySVGContainer{
+    height: 80%;
+
+    overflow: hidden;
+}
+
+.copySVGContainer > svg{
+    fill: white;
+
+
+    height: 100%;
+    width: 100%;
+
+    object-fit: contain;
+    cursor: pointer;
+
+    overflow: hidden;
+}
+
+
+.copyToClipBoard > svg{
+    fill: rgb(196, 196, 196);
+
+    transition: fill .2s ease-in-out;
+}
+
+.copyToClipBoard:hover > svg{
+    fill: rgb(255, 255, 255);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.bodyContainer{
+    flex-shrink: 0;
+
+    height: 5rem;
+
+    display: flex;
+    align-items: center;
+
+    white-space: nowrap;
+
+    overflow-x: auto;
+}
+
+
+
+.genLink{
+
+    font-family: 'Courier New', Courier, monospace;
+}

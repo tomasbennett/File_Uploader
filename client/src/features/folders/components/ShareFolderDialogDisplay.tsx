@@ -3,14 +3,16 @@ import styles from "./ShareFolderDialogDisplay.module.css";
 import { IShareDuration, ISharedFolderTimeResponse, ShareDurationSchema } from "../../../../../shared/models/ISharedFolderTimeResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { errorHandler } from "../services/ErrorHandler";
-import { domain } from "../../../services/EnvironmentAPI";
+import { domain, frontendDomain } from "../../../services/EnvironmentAPI";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { APIErrorSchema, ICustomErrorResponse } from "../../../../../shared/models/ICustomErrorResponse";
 import { jsonParsingError, notExpectedFormatError } from "../constants";
-import { GeneratedLinkResponseSchema } from "../../../../../shared/models/IGeneratedLinkResponse";
+import { GeneratedLinkResponseSchema, ReturnPreexistingLinkSchema } from "../../../../../shared/models/IGeneratedLinkResponse";
 import { LoadingCircle } from "../../../components/LoadingCircle";
 import { basicResponseHandle } from "../services/BasicResponseHandle";
+import { GeneratedLinkBox } from "./GeneratedLinkBox";
+
 
 
 type IShareFolderDialogDisplayProps = {
@@ -37,6 +39,8 @@ export function ShareFolderDialogDisplay({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [apiError, setApiError] = useState<ICustomErrorResponse | null>(null);
+    const [generatedLink, setGeneratedLink] = useState<{ link: string, header: string } | null>(null);
+
 
     const navigation = useNavigate();
 
@@ -88,13 +92,24 @@ export function ShareFolderDialogDisplay({
                 return;
             }
 
-
+            
             const responseData = await response.json();
+            if (response.status === 409) {
+                const preexistingLinkResult = ReturnPreexistingLinkSchema.safeParse(responseData);
+                if (preexistingLinkResult.success) {
+                    setGeneratedLink({ link: `${frontendDomain}/folder/public/${preexistingLinkResult.data.link}`, header: "Preexisting Link:" });
+                    reset();
 
+                    return;
+                }
+                
+            }
+            
             const apiResponseResult = GeneratedLinkResponseSchema.safeParse(responseData);
             if (apiResponseResult.success) {
                 console.log("Generated Link Response:", apiResponseResult.data);
                 console.dir(apiResponseResult.data);
+                setGeneratedLink({ link: `${frontendDomain}/folder/public/${apiResponseResult.data.link}`, header: "Generated Link:" });
                 reset();
 
                 return;
@@ -129,70 +144,74 @@ export function ShareFolderDialogDisplay({
 
     }
 
-    useEffect(() => {
-        console.log("API Error:", apiError);
-    }, [apiError]);
+
 
 
     return (
         <div className={styles.shareFolderDialogContainer}>
 
 
+            {
+                generatedLink !== null ?
+                    <GeneratedLinkBox header={generatedLink.header} link={generatedLink.link} />
 
-            <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+                    :
+                    
+                    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
 
-                <label className={styles.option}>
-                    <input defaultChecked={true} {...register("duration")} type="radio" name="duration" value="3600" />
-                    1 hour
-                </label>
+                        <label className={styles.option}>
+                            <input defaultChecked={true} {...register("duration")} type="radio" name="duration" value="3600" />
+                            1 hour
+                        </label>
 
-                <label className={styles.option}>
-                    <input {...register("duration")} type="radio" name="duration" value="14400" />
-                    4 hours
-                </label>
+                        <label className={styles.option}>
+                            <input {...register("duration")} type="radio" name="duration" value="14400" />
+                            4 hours
+                        </label>
 
-                <label className={styles.option}>
-                    <input {...register("duration")} type="radio" name="duration" value="86400" />
-                    1 day
-                </label>
+                        <label className={styles.option}>
+                            <input {...register("duration")} type="radio" name="duration" value="86400" />
+                            1 day
+                        </label>
 
-                <label className={styles.option}>
-                    <input {...register("duration")} type="radio" name="duration" value="2628000" />
-                    1 month
-                </label>
+                        <label className={styles.option}>
+                            <input {...register("duration")} type="radio" name="duration" value="2628000" />
+                            1 month
+                        </label>
 
-                <p className={styles.description}>
-                    Please select the duration for which the shareable link will remain active.
-                </p>
+                        <p className={styles.description}>
+                            Please select the duration for which the shareable link will remain active.
+                        </p>
 
-                {
-                    errors.duration &&
-                    <p className={styles.errorMessage}>
-                        {errors.duration.message}
-                    </p>
-                }
+                        {
+                            errors.duration &&
+                            <p className={styles.errorMessage}>
+                                {errors.duration.message}
+                            </p>
+                        }
 
-                {
-                    errors.root &&
-                    <p className={styles.errorMessage}>
-                        {errors.root.message}
-                    </p>
-                }
+                        {
+                            errors.root &&
+                            <p className={styles.errorMessage}>
+                                {errors.root.message}
+                            </p>
+                        }
 
-                <button
-                    type="submit"
-                    className={styles.generateLinkBtn}
-                >
-                    {
-                        isLoading ?
-                            <LoadingCircle width="3.1rem" />
-                            :
+                        <button
+                            type="submit"
+                            className={styles.generateLinkBtn}
+                        >
+                            {
+                                isLoading ?
+                                    <LoadingCircle width="3.1rem" />
+                                    :
 
-                            "Generate Link"
-                    }
-                </button>
+                                    "Generate Link"
+                            }
+                        </button>
 
-            </form>
+                    </form>
+            }
 
 
         </div>
