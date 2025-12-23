@@ -1,4 +1,4 @@
-export const environment: "DEV" | "PROD" = "DEV";
+export const environment: "DEV" | "PROD" = "PROD";
 
 
 
@@ -55,4 +55,5 @@ export const allowedTypes = [
 ];
 
 
-export const backendUrl = "http://localhost:3000";
+// export const backendUrl = "http://localhost:3000";
+export const backendUrl = "";

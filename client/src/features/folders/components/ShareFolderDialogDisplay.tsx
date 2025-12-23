@@ -101,7 +101,7 @@ export function ShareFolderDialogDisplay({
             if (response.status === 409) {
                 const preexistingLinkResult = ReturnPreexistingLinkSchema.safeParse(responseData);
                 if (preexistingLinkResult.success) {
-                    setGeneratedLink({ link: `${frontendDomain}/folder/public/${preexistingLinkResult.data.link}`, header: "Preexisting Link:" });
+                    setGeneratedLink({ link: `${window.location.origin}/folder/public/${preexistingLinkResult.data.link}`, header: "Preexisting Link:" });
                     reset();
 
                     return;
@@ -113,7 +113,7 @@ export function ShareFolderDialogDisplay({
             if (apiResponseResult.success) {
                 console.log("Generated Link Response:", apiResponseResult.data);
                 console.dir(apiResponseResult.data);
-                setGeneratedLink({ link: `${frontendDomain}/folder/public/${apiResponseResult.data.link}`, header: "Generated Link:" });
+                setGeneratedLink({ link: `${window.location.origin}/folder/public/${apiResponseResult.data.link}`, header: "Generated Link:" });
                 reset();
 
                 return;
