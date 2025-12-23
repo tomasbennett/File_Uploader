@@ -22,12 +22,13 @@ import { environment } from "../../shared/constants";
 import { ICustomErrorResponse } from "../../shared/models/ICustomErrorResponse";
 
 
-
+const SERVER = path.resolve(process.cwd(), "server");
+const CLIENT_DIST = path.resolve(process.cwd(), "client", "dist");
 
 
 
 dotenv.config({
-  path: path.join(__dirname, "../.env"),
+  path: path.join(SERVER, ".env"),
 });
 
 const app = express();
@@ -43,7 +44,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "../../client/dist")));
+app.use(express.static(CLIENT_DIST));
 
 
 
@@ -82,7 +83,7 @@ app.use("/download", downloadRouter);
 
 app.get(/.*/, (req: Request, res: Response, next: NextFunction) => {
 
-  return res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+  return res.sendFile(path.join(CLIENT_DIST, "index.html"));
 
 
 });

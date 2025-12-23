@@ -6,12 +6,12 @@ import { supabase } from "../supabase/client";
 import { prisma } from "../db/prisma";
 import { INewFileResponse } from "../../../shared/models/INewFileResponse";
 
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import { IsUsersFolder } from "../services/IsUsersFolder";
-import { is } from "zod/v4/locales";
-dotenv.config({
-    path: "../../.env"
-});
+// import { is } from "zod/v4/locales";
+// dotenv.config({
+//     path: "../../.env"
+// });
 
 
 export const router = Router();
