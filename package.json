@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:client": "cd client && npm install && npm run build",
-    "build:server": "cd server && npm install && tsc",
+    "build:client": "npm install && cd client && npm install && npm run build",
+    "build:server": "npm install && cd server && npm install && tsc",
     "build": "npm run build:client && npm run build:server",
     "start:server": "node ./server/dist/server/src/app.js",
     "build-and-start": "npm run build && npm run start:server"
