@@ -53,9 +53,11 @@ app.use(session({
   secret: process.env.COOKIE_SECRET_NAME || "default_secret",
   resave: false,
   saveUninitialized: false,
+  proxy: environment === "PROD" ? true : false,
   cookie: {
     httpOnly: true,
     secure: environment === "PROD",
+    sameSite: environment === "PROD" ? "none" : "lax",
   },
 }));
 
