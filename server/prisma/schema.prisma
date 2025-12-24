@@ -65,6 +65,7 @@ model Shared {
   expiresAt DateTime
 
   sharedRelationships SharedNode[]
+
 }
 
 model SharedNode {
