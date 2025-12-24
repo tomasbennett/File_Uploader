@@ -4,7 +4,12 @@
   "description": "This is a backend express web application that intends to allows users to store personal and private files and create shareable public links for specific folders or files across the internet.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:client": "cd client && npm install && npm run build",
+    "build:server": "cd server && npm install && tsc",
+    "build": "npm run build:client && npm run build:server",
+    "start:server": "node ./server/dist/server/src/app.js",
+    "build-and-start": "npm run build && npm run start:server"
   },
   "keywords": [],
   "author": "",
