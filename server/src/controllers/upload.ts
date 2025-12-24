@@ -93,6 +93,32 @@ router.post("/files/upload", ensureAuthentication, upload.single("file"), async 
 
 
 
+
+        
+        const sharedFolderCheck = await prisma.sharedNode.findMany({
+            where: {
+                folderId: currentFolderId
+            },
+
+        });
+
+        if (sharedFolderCheck.length > 0) {
+            for (const sharedNode of sharedFolderCheck) {
+                await prisma.sharedNode.create({
+                    data: {
+                        sharedRelationshipId: sharedNode.sharedRelationshipId,
+                        fileId: newFilePrisma.id,
+                        parentNodeId: sharedNode.id,
+                    }
+                });
+            }
+
+
+        }
+
+
+
+
         return res.status(201).json({
             ok: true,
             status: 201,
